@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -lib "unisims_ver" -lib "unimacro_ver" -lib "xilinxcorelib_ver" -lib "secureip" -o "/home/ise/ultrasonicRadar_Test_V1.2/Ultrasonic_Radar_MUL_Top_Test_isim_beh.exe" -prj "/home/ise/ultrasonicRadar_Test_V1.2/Ultrasonic_Radar_MUL_Top_Test_beh.prj" "work.Ultrasonic_Radar_MUL_Top_Test" "work.glbl" 
