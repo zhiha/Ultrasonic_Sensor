@@ -1,0 +1,6 @@
+package ultrasonic
+
+
+object Ethernet {
+
+}

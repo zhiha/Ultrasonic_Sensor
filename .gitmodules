@@ -1,0 +1,6 @@
+[submodule "fpga/spinal/TARGET_FOLDER"]
+	path = fpga/spinal/TARGET_FOLDER
+	url = git@github.com:SpinalHDL/SpinalCrypto.git
+[submodule "fpga/spinal/tools"]
+	path = fpga/spinal/tools
+	url = git@github.com:SpinalHDL/SpinalCrypto.git

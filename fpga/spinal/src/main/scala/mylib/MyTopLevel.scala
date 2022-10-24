@@ -23,6 +23,7 @@ import spinal.lib._
 
 import scala.util.Random
 
+
 //Hardware definition
 class MyTopLevel extends Component {
   val io = new Bundle {
