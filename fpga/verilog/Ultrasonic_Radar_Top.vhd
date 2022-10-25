@@ -604,7 +604,7 @@ myila : ILA
 	 TRIG0(4) => rmiiv_s,
 	 TRIG0(5) => rmii0_s,
 	 TRIG0(6) => rmii1_s,
-	 TRIG0(7) => PDM_byte_data_done
+	 TRIG0(7) => FE_RXD1
    	 );
 
 RMII_RXER_SDIO_D0 <= '0';

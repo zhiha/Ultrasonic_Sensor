@@ -79,6 +79,7 @@ reg crc_last_flag = 0;
 reg [15:0] byte_cnt = 0;
 reg [7:0] byte_tmp = 0;
 //time_stap cnt
+reg [31:0] Time_Debug = 0;
 reg [31:0] Time_Send = 0;
 reg [31:0] Time_Recive = 0;
 reg [31:0] Time_Cnt = 0;
@@ -176,6 +177,7 @@ always@(negedge clk or negedge reset) begin
 					TX_BYTE_NUM <= rmii_tx_len;
 					Time_Recive <= Time_Cnt;
 					cur_state <= ST_PREAMBLE;
+					Time_Debug <= Time_Debug + 1;
 				end
 			end
 			ST_PREAMBLE: begin
@@ -238,8 +240,8 @@ always@(negedge clk or negedge reset) begin
 				bit_sel <= bit_sel + 1;
 				crc_mode <= 1'b1;
 				if(Time_flag==0)begin
-					rmii0 <= Time_Send[24-byte_cnt*8+bit_sel*2];
-					rmii1 <= Time_Send[24-byte_cnt*8+bit_sel*2+1];
+					rmii0 <= Time_Debug[24-byte_cnt*8+bit_sel*2];//Time_Send[24-byte_cnt*8+bit_sel*2];
+					rmii1 <= Time_Debug[24-byte_cnt*8+bit_sel*2+1];//Time_Send[24-byte_cnt*8+bit_sel*2+1];
 				end
 				else begin
 					rmii0 <= Time_Recive[24-byte_cnt*8+bit_sel*2];
@@ -248,13 +250,13 @@ always@(negedge clk or negedge reset) begin
 				if(bit_sel == 2)begin
 					if(Time_flag==0)begin
 						if(byte_cnt == 0)
-							crc_din <= Time_Send[31:24];
+							crc_din <= Time_Debug[31:24];//Time_Send[31:24];
 						else if(byte_cnt == 1)
-							crc_din <= Time_Send[23:16];
+							crc_din <= Time_Debug[23:16];//Time_Send[23:16];
 						else if(byte_cnt == 2)
-							crc_din <= Time_Send[15:8];
+							crc_din <= Time_Debug[15:8];//Time_Send[15:8];
 						else if(byte_cnt == 3)
-							crc_din <= Time_Send[7:0];
+							crc_din <= Time_Debug[7:0];//Time_Send[7:0];
 						crc_din_valid <= 1'b1;
 					end
 					else if(Time_flag==1)begin

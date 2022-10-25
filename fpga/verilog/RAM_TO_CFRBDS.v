@@ -84,6 +84,7 @@ always@(posedge clk or negedge reset)begin
 					finish_flag <= 1;
 				end
 				if(read_addr == 3999) begin
+//					state <= 0;
 					txflag <= 0;
 					read_addr <= 0;
 				end

@@ -22,7 +22,6 @@ module Ultrasonic_PDM_FIFO_MUL(
    input clk,
 	input reset,
 	input [17:0] fe_rx,
-	//input [7:0] fe_rx,
 	output reg [17:0] fe_rx_data,
 	output reg [15:0] byte_num,
 	output reg fe_rx_data_valid,
