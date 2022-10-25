@@ -24,18 +24,23 @@ import java.lang._
 
 case class EthernetConfig( val sender:String = "11:22:33:44:55:66",
                            val receiver:String = "fa:23:aa:60:10:6f",
-                           val inDataWidth:Int = 8,
-                           val outDataWidth:Int = 8,
+                           val inDataWidth:Int = 16,
+                           val outDataWidth:Int = 16,
                          )
 
 object EthernetProtocol {
   val PREAMBLE = 0x55
   val FRAMESTART = 0xd5
+  val USERTYPE = 0x0009
+  val CONFIGSTART = 0x000A
+  val CONFIGFINISH = 0x000B
 }
 
 
 
 class RMII_Ethernet(config:EthernetConfig) extends Component {
+  assert(config.outDataWidth%2==0 && config.inDataWidth%2==0,"Ethernet in/out Width should be the pow of 2!")
+
   val io = new Bundle {
     val rmii_rx = in Bits(2 bits)
     val rmii_rxen = in Bool()
@@ -46,96 +51,181 @@ class RMII_Ethernet(config:EthernetConfig) extends Component {
     val rx_data_valid = out Bool()
     val tx_data_payload = in Bits(config.inDataWidth bits)
     val tx_data_valid = in Bool()
+
+    val fe_flag = out Bool()
   }
 
-  val rx = new Area {
-    val sel = Reg(UInt(log2Up(8) bits))
+  val rx = new RMII_RX(config)
 
-    val Byte_Data = Reg(Bits(8 bits)) init (0)
-    val Byte_valid = Reg(Bool()) init (false)
-    val Rx_Data = Reg(Bits(config.outDataWidth bits)) init (0)
-    val Rx_valid = Reg(Bool()) init (false)
+  io.rmii_rx <> rx.io.rmii_rx
+  io.rmii_rxen <> rx.io.rmii_rxen
+  io.rx_data_valid <> rx.io.rx_data_valid
+  io.rx_data_payload <> rx.io.rx_data_payload
+  io.fe_flag <> rx.io.fe_flag
 
-    when(io.rmii_rxen){
-      sel := sel + 1
-      Byte_Data(2*sel) := io.rmii_rx(0)
-      Byte_Data(2*sel+1) := io.rmii_rx(1)
-    }
-
-    Byte_valid := 0
-    when(sel === U(3)){
-      sel := 0
-      Byte_valid := 1
-    }
-
-    val fsm = new StateMachine {
-      val PREAMBLE = new State with EntryPoint
-      val FRAMRESTART = new State
-      val DESTMAC = new State
-      val SOURCEMAC = new State
-      val TYPE = new State
-      val DATA = new State
-      val CRC = new State
-
-      val counter = Reg(UInt(8 bits)) init (0)
-      val mac = Reg(UInt(48 bits)) init(0)
-
-      PREAMBLE
-        .whenIsActive {
-          when(Byte_valid) {
-            counter := (Byte_Data === EthernetProtocol.PREAMBLE) ? (counter+1) | 0
-            when(counter === U(6)){
-              goto(FRAMRESTART)
-            }
-          }
-        }
-
-      FRAMRESTART
-        .onEntry(counter := 0)
-        .whenIsActive {
-          when(Byte_valid && Byte_Data === EthernetProtocol.FRAMESTART) {
-              goto(DESTMAC)
-          }
-        }
-
-      DESTMAC
-        .whenIsActive {
-          when(Byte_valid){
-            mac := mac(39 downto 0) ## Byte_Data
-            counter := counter + 1
-            when(counter===5){
-              goto(SOURCEMAC)
-              when(mac=/=Ethernet.parseMacAddress(config.receiver)){
-                goto(PREAMBLE)
-              }
-            }
-          }
-
-        }
-
-      SOURCEMAC
-
-
-
-
-    }
-
-
-
-
-
-
-
-  }
 
   io.rmii_tx := True ## True
   io.rmii_txv := True
-  io.rx_data_valid := False
-  io.rx_data_payload := 0
+
 
   io.setName("")
   rx.setName("")
 }
+
+class RMII_RX(config:EthernetConfig) extends Component{
+  val io = new Bundle{
+    val rmii_rx = in Bits (2 bits)
+    val rmii_rxen = in Bool()
+    val fe_flag = out Bool()
+    val rx_data_payload = out Bits (config.outDataWidth bits)
+    val rx_data_valid = out Bool()
+  }
+
+  val Byte_sel = Reg(UInt(log2Up(4) bits))
+  val Byte_Data = Reg(Bits(8 bits)) init (0)
+  val Byte_valid = Reg(Bool()) init (false)
+
+  Byte_valid := False
+  when(io.rmii_rxen) {
+    Byte_Data(Byte_sel|<<1) := io.rmii_rx(0)
+    Byte_Data(Byte_sel|<<1 + 1) := io.rmii_rx(1)
+    Byte_sel := Byte_sel + 1
+    when(Byte_sel === U(3)) {
+      Byte_sel := 0
+      Byte_valid := True
+    }
+  }
+
+  val Rx_Data = Reg(Bits(config.outDataWidth bits)) init (0)
+  val Rx_Data_valid = Reg(Bool()) init (false)
+  val Rx_Data_sel = Reg(UInt(log2Up(config.outDataWidth/2) bits)) init(0)
+
+  io.rx_data_payload := Rx_Data
+  io.rx_data_valid := Rx_Data_valid
+
+
+  val fsm = new StateMachine {
+    val PREAMBLE = new State with EntryPoint
+    val FRAMRESTART = new State
+    val DESTMAC = new State
+    val SOURCEMAC = new State
+    val TYPE = new State
+    val DATALEN = new State
+    val DATA = new State
+    val CRC = new State
+
+    val counter = Reg(UInt(16 bits)) init (0)
+    val mac = Reg(UInt(48 bits)) init (0)
+    val ethtype = Reg(UInt(16 bits)) init (0)
+    val fe_flag = Reg(Bool()) init(false)
+    val Rx_Data_len = Reg(UInt(16 bits)) init(0)
+
+    io.fe_flag := fe_flag
+
+    Rx_Data_valid := False
+    when(io.rmii_rxen) {
+      Rx_Data_sel := Rx_Data_sel + 1
+      Rx_Data(Rx_Data_sel |<< 1) := io.rmii_rx(0)
+      Rx_Data(Rx_Data_sel |<< 1 + 1) := io.rmii_rx(1)
+      when(Rx_Data_sel === U((config.outDataWidth / 2 - 1).toInt, log2Up(config.outDataWidth / 2) bits) && isActive(DATA)) {
+        Rx_Data_sel := 0
+        Rx_Data_valid := True
+      }
+    }
+
+    PREAMBLE
+      .whenIsActive {
+        when(Byte_valid) {
+          counter := (Byte_Data === EthernetProtocol.PREAMBLE) ? (counter + 1) | 0
+          when(counter === U(6)) {
+            goto(FRAMRESTART)
+          }
+        }
+      }
+
+    FRAMRESTART
+      .onEntry(counter := 0)
+      .whenIsActive {
+        when(Byte_valid && Byte_Data === EthernetProtocol.FRAMESTART) {
+          goto(DESTMAC)
+        }
+      }
+
+    DESTMAC
+      .whenIsActive {
+        when(Byte_valid) {
+          mac := mac(39 downto 0) @@ Byte_Data.asUInt
+          counter := counter + 1
+          when(counter === 5) {
+            goto(SOURCEMAC)
+            when(mac =/= U(Ethernet.parseMacAddress(config.receiver), 48 bits)) {
+              goto(PREAMBLE)
+            }
+          }
+        }
+      }
+      .onExit(counter := 0)
+
+    SOURCEMAC
+      .whenIsActive {
+        when(Byte_valid) {
+          mac := mac(39 downto 0) @@ Byte_Data.asUInt
+          counter := counter + 1
+          when(counter === 5) {
+            goto(SOURCEMAC)
+          }
+        }
+      }
+      .onExit(counter := 0)
+
+    TYPE
+      .whenIsActive {
+        when(Byte_valid) {
+          ethtype := ethtype(7 downto 0) @@ Byte_Data.asUInt
+          counter := counter + 1
+          goto(PREAMBLE)
+          when(counter === 1 && ethtype === EthernetProtocol.CONFIGSTART) {
+            fe_flag := False
+            goto(DATALEN)
+          }
+          when(counter === 1 && ethtype === EthernetProtocol.CONFIGFINISH) {
+            fe_flag := True
+            goto(PREAMBLE)
+          }
+        }
+      }
+      .onExit(counter := 0)
+
+    DATALEN
+      .whenIsActive{
+        when(Byte_valid) {
+          Rx_Data_len := Rx_Data_len(7 downto 0) @@ Byte_Data.asUInt
+          counter := counter + 1
+          when(counter === 1) {
+            goto(DATA)
+          }
+        }
+      }
+      .onExit(counter := 0)
+
+    DATA
+      .whenIsActive{
+        when(Rx_Data_valid){
+          counter := counter + 1
+          when(counter === Rx_Data_len-1) {
+            goto(PREAMBLE)
+          }
+        }
+      }
+      .onExit(counter := 0)
+
+  }
+
+
+
+
+}
+
 
 object Ethernet{
   /**
@@ -155,7 +245,8 @@ object Ethernet{
   }
 
   def main(args: Array[String]): Unit ={
-    SpinalVerilog(Ethernet.generate())
+    //SpinalVerilog(Ethernet.generate())
+    SpinalConfig(anonymSignalPrefix = "tmp").generateVerilog(Ethernet.generate()).printPruned()
   }
 }
 
