@@ -22,8 +22,8 @@ import java.lang._
  * rmii_txv<--|-------------|--->Rx_DATA[outDataWidth]
  */
 
-case class EthernetConfig( val sender:String = "11:22:33:44:55:66",
-                           val receiver:String = "fa:23:aa:60:10:6f",
+case class EthernetConfig( val sender:String = "fa:23:aa:60:10:6f",
+                           val receiver:String = "11:22:33:44:55:66",
                            val inDataWidth:Int = 16,
                            val outDataWidth:Int = 16,
                          )
@@ -31,9 +31,9 @@ case class EthernetConfig( val sender:String = "11:22:33:44:55:66",
 object EthernetProtocol {
   val PREAMBLE = 0x55
   val FRAMESTART = 0xd5
-  val USERTYPE = 0x0009
-  val CONFIGSTART = 0x000A
-  val CONFIGFINISH = 0x000B
+  val USERTYPE = 0x0900
+  val CONFIGSTART = 0x0A00
+  val CONFIGFINISH = 0x0B00
 }
 
 
@@ -69,10 +69,13 @@ class RMII_Ethernet(config:EthernetConfig) extends Component {
 
 
   io.setName("")
-  rx.setName("")
+
 }
 
-class RMII_RX(config:EthernetConfig) extends Component{
+class RMII_TX(config:EthernetConfig) extends Component{
+
+}
+class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
   val io = new Bundle{
     val rmii_rx = in Bits (2 bits)
     val rmii_rxen = in Bool()
@@ -81,14 +84,16 @@ class RMII_RX(config:EthernetConfig) extends Component{
     val rx_data_valid = out Bool()
   }
 
-  val Byte_sel = Reg(UInt(log2Up(4) bits))
+  val Byte_sel = Reg(UInt(log2Up(8) bits)) init(0)
   val Byte_Data = Reg(Bits(8 bits)) init (0)
   val Byte_valid = Reg(Bool()) init (false)
 
   Byte_valid := False
   when(io.rmii_rxen) {
+//    Byte_Data((Byte_sel*2).resize(3)) := io.rmii_rx(0)
+//    Byte_Data((Byte_sel*2+1).resize(3)) := io.rmii_rx(1)
     Byte_Data(Byte_sel|<<1) := io.rmii_rx(0)
-    Byte_Data(Byte_sel|<<1 + 1) := io.rmii_rx(1)
+    Byte_Data((Byte_sel|<<1)+1) := io.rmii_rx(1)
     Byte_sel := Byte_sel + 1
     when(Byte_sel === U(3)) {
       Byte_sel := 0
@@ -98,7 +103,7 @@ class RMII_RX(config:EthernetConfig) extends Component{
 
   val Rx_Data = Reg(Bits(config.outDataWidth bits)) init (0)
   val Rx_Data_valid = Reg(Bool()) init (false)
-  val Rx_Data_sel = Reg(UInt(log2Up(config.outDataWidth/2) bits)) init(0)
+  val Rx_Data_sel = Reg(UInt(log2Up(config.outDataWidth) bits)) init(0)
 
   io.rx_data_payload := Rx_Data
   io.rx_data_valid := Rx_Data_valid
@@ -126,8 +131,8 @@ class RMII_RX(config:EthernetConfig) extends Component{
     when(io.rmii_rxen) {
       Rx_Data_sel := Rx_Data_sel + 1
       Rx_Data(Rx_Data_sel |<< 1) := io.rmii_rx(0)
-      Rx_Data(Rx_Data_sel |<< 1 + 1) := io.rmii_rx(1)
-      when(Rx_Data_sel === U((config.outDataWidth / 2 - 1).toInt, log2Up(config.outDataWidth / 2) bits) && isActive(DATA)) {
+      Rx_Data((Rx_Data_sel |<< 1) + 1) := io.rmii_rx(1)
+      when(Rx_Data_sel === U((config.outDataWidth / 2 - 1).toInt, log2Up(config.outDataWidth) bits) && isActive(DATA)) {
         Rx_Data_sel := 0
         Rx_Data_valid := True
       }
@@ -156,11 +161,11 @@ class RMII_RX(config:EthernetConfig) extends Component{
         when(Byte_valid) {
           mac := mac(39 downto 0) @@ Byte_Data.asUInt
           counter := counter + 1
-          when(counter === 5) {
-            goto(SOURCEMAC)
-            when(mac =/= U(Ethernet.parseMacAddress(config.receiver), 48 bits)) {
-              goto(PREAMBLE)
-            }
+        }
+        when(counter === 6){
+          goto(SOURCEMAC)
+          when(mac =/= U(Ethernet.parseMacAddress(config.receiver), 48 bits)) {
+            goto(PREAMBLE)
           }
         }
       }
@@ -171,8 +176,11 @@ class RMII_RX(config:EthernetConfig) extends Component{
         when(Byte_valid) {
           mac := mac(39 downto 0) @@ Byte_Data.asUInt
           counter := counter + 1
-          when(counter === 5) {
-            goto(SOURCEMAC)
+        }
+        when(counter === 6) {
+          goto(TYPE)
+          when(mac =/= U(Ethernet.parseMacAddress(config.sender), 48 bits)) {
+            goto(PREAMBLE)
           }
         }
       }
@@ -183,15 +191,18 @@ class RMII_RX(config:EthernetConfig) extends Component{
         when(Byte_valid) {
           ethtype := ethtype(7 downto 0) @@ Byte_Data.asUInt
           counter := counter + 1
+        }
+        when(counter === 2 && ethtype === EthernetProtocol.CONFIGSTART) {
+          fe_flag := False
+          goto(DATALEN)
+        }
+        when(counter === 2 && ethtype === EthernetProtocol.CONFIGFINISH) {
+          fe_flag := True
           goto(PREAMBLE)
-          when(counter === 1 && ethtype === EthernetProtocol.CONFIGSTART) {
-            fe_flag := False
-            goto(DATALEN)
-          }
-          when(counter === 1 && ethtype === EthernetProtocol.CONFIGFINISH) {
-            fe_flag := True
-            goto(PREAMBLE)
-          }
+        }
+        when(counter === 2 && ethtype === EthernetProtocol.USERTYPE) {
+          fe_flag := True
+          goto(DATALEN)
         }
       }
       .onExit(counter := 0)
@@ -210,9 +221,9 @@ class RMII_RX(config:EthernetConfig) extends Component{
 
     DATA
       .whenIsActive{
-        when(Rx_Data_valid){
+        when(Byte_valid){
           counter := counter + 1
-          when(counter === Rx_Data_len-1) {
+          when(counter === Rx_Data_len-1 || !io.rmii_rxen) {
             goto(PREAMBLE)
           }
         }
@@ -220,9 +231,7 @@ class RMII_RX(config:EthernetConfig) extends Component{
       .onExit(counter := 0)
 
   }
-
-
-
+  io.setName("")
 
 }
 
