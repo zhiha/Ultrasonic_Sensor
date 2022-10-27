@@ -29,9 +29,6 @@ object TestEthernet {
             dut.clockDomain.waitRisingEdge()
           }
         }
-
-
-
     }
   }
 
@@ -60,6 +57,7 @@ object EthernetSampleData{
     (0 to len-1).foreach(i => {ret.append((Math.random()*128).toByte)
     })
     ret.foreach(i=>print(Byte.parseByte(i.toString).toHexString + " "))
+    print("\n")
     ret
   }
 
@@ -71,6 +69,17 @@ object EthernetSampleData{
         ret.append(tmp)
       })
     })
+    ret
+  }
+
+  def rawValidData(len: Int = 90): ArrayBuffer[Byte] = {
+    val ret = ArrayBuffer[Byte]()
+    //data
+    (0 to len - 1).foreach(i => {
+      ret.append((Math.random() * 128).toByte)
+    })
+    ret.foreach(i => print(Byte.parseByte(i.toString).toHexString + " "))
+    print("\n")
     ret
   }
 

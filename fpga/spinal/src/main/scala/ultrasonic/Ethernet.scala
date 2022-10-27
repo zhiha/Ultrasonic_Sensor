@@ -6,6 +6,8 @@ import spinal.lib._
 import spinal.lib.fsm._
 
 import java.lang._
+import mylib._
+import spinal.core.Component.push
 
 /**
  *
@@ -13,6 +15,7 @@ import java.lang._
  * @param receiver
  * @param inDataWidth
  * @param outDataWidth
+ * @param txDatalen
  *
  * rmii_rx0-->|-------------|<---Tx_DATA[inDataWidth]
  * rmii_rx1-->|             |--------------
@@ -26,6 +29,7 @@ case class EthernetConfig( val sender:String = "fa:23:aa:60:10:6f",
                            val receiver:String = "11:22:33:44:55:66",
                            val inDataWidth:Int = 16,
                            val outDataWidth:Int = 16,
+                           val curDatalen:Int = 46,
                          )
 
 object EthernetProtocol {
@@ -36,8 +40,6 @@ object EthernetProtocol {
   val CONFIGFINISH = 0x0B00
 }
 
-
-
 class RMII_Ethernet(config:EthernetConfig) extends Component {
   assert(config.outDataWidth%2==0 && config.inDataWidth%2==0,"Ethernet in/out Width should be the pow of 2!")
 
@@ -47,25 +49,30 @@ class RMII_Ethernet(config:EthernetConfig) extends Component {
     val rmii_tx = out Bits(2 bits)
     val rmii_txv = out Bool()
 
-    val rx_data_payload = out Bits(config.outDataWidth bits)
-    val rx_data_valid = out Bool()
-    val tx_data_payload = in Bits(config.inDataWidth bits)
-    val tx_data_valid = in Bool()
-
+    val rx_data = master Stream(Bits(config.outDataWidth bits))
     val fe_flag = out Bool()
+
+    val tx_data = slave Stream(Bits(config.inDataWidth bits))
+    val tx_flag = in Bool()
+
+
   }
 
   val rx = new RMII_RX(config)
 
+  val tx = new RMII_TX(config)
+
   io.rmii_rx <> rx.io.rmii_rx
   io.rmii_rxen <> rx.io.rmii_rxen
-  io.rx_data_valid <> rx.io.rx_data_valid
-  io.rx_data_payload <> rx.io.rx_data_payload
+
+  io.rx_data <> rx.io.rx_data
+  io.tx_data <> tx.io.tx_data
+
+  io.tx_flag <> tx.io.tx_flag
   io.fe_flag <> rx.io.fe_flag
 
-
-  io.rmii_tx := True ## True
-  io.rmii_txv := True
+  io.rmii_tx <> tx.io.rmii_tx
+  io.rmii_txv <> tx.io.rmii_txv
 
 
   io.setName("")
@@ -74,14 +81,121 @@ class RMII_Ethernet(config:EthernetConfig) extends Component {
 
 class RMII_TX(config:EthernetConfig) extends Component{
 
+  val MinDataLen = 46
+  val MaxDataLen = 1500
+  assert(config.curDatalen<=MaxDataLen && config.curDatalen>=MinDataLen,"Ethernet txDatalen should be in range(46,1500)")
+
+  val io = new Bundle {
+    val rmii_tx = out Bits (2 bits)
+    val rmii_txv = out Bool()
+    val tx_data = slave Stream(Bits(config.inDataWidth bits))
+    val tx_flag = in Bool()
+  }
+
+  val rmii_tx = Reg(Bits (2 bits)) init(0)
+  val rmii_txv = Reg(Bool()) init(false)
+  val tx_data_ready = Reg(Bool()) init(false)
+
+//  print(s"fifo depth: ${Math.pow(2,log2Up(config.curDatalen)).toInt}")
+//  val fifo = new AsyncFifo(depth = Math.pow(2,log2Up(config.curDatalen)).toInt, width = config.inDataWidth)
+
+  io.rmii_tx := rmii_tx
+  io.rmii_txv := rmii_txv
+
+  io.tx_data.ready := tx_data_ready
+//  fifo.io.push << io.tx_data
+
+
+  val fsm = new StateMachine {
+    val IDLE = new State with EntryPoint
+    val PREAMBLE = new State
+    val FRAMRESTART = new State
+    val DESTMAC = new State
+    val SOURCEMAC = new State
+    val TYPE = new State
+    val TIME = new State
+    val DATA = new State
+    val CRC = new State
+
+    val counter = Reg(UInt(16 bits)) init (0)
+    val mac = Reg(UInt(48 bits)) init (0)
+    val ethtype = Reg(UInt(16 bits)) init (0)
+
+    IDLE
+      .whenIsActive{
+        tx_data_ready := False
+        when(io.tx_flag){
+          goto(PREAMBLE)
+        }
+//        when(fifo.fifo.io.pushOccupancy === U(2)){
+//
+//        }
+      }
+
+
+    PREAMBLE
+      .whenIsActive {
+        rmii_txv := True
+
+      }
+
+    FRAMRESTART
+      .onEntry(counter := 0)
+      .whenIsActive {
+
+
+      }
+
+    DESTMAC
+      .whenIsActive {
+
+      }
+      .onExit(counter := 0)
+
+    SOURCEMAC
+      .whenIsActive {
+
+
+      }
+      .onExit(counter := 0)
+
+    TYPE
+      .whenIsActive {
+
+
+      }
+      .onExit(counter := 0)
+
+    TIME
+      .whenIsActive {
+
+      }
+      .onExit(counter := 0)
+
+    DATA
+      .whenIsActive {
+
+      }
+      .onExit(counter := 0)
+
+    CRC
+      .whenIsActive{
+
+      }
+      .onExit(counter := 0)
+
+
+  }
+
+  io.setName("")
+
 }
 class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
   val io = new Bundle{
     val rmii_rx = in Bits (2 bits)
     val rmii_rxen = in Bool()
     val fe_flag = out Bool()
-    val rx_data_payload = out Bits (config.outDataWidth bits)
-    val rx_data_valid = out Bool()
+    val rx_data = master Stream(Bits(config.outDataWidth bits))
   }
 
   val Byte_sel = Reg(UInt(log2Up(8) bits)) init(0)
@@ -90,8 +204,6 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
 
   Byte_valid := False
   when(io.rmii_rxen) {
-//    Byte_Data((Byte_sel*2).resize(3)) := io.rmii_rx(0)
-//    Byte_Data((Byte_sel*2+1).resize(3)) := io.rmii_rx(1)
     Byte_Data(Byte_sel|<<1) := io.rmii_rx(0)
     Byte_Data((Byte_sel|<<1)+1) := io.rmii_rx(1)
     Byte_sel := Byte_sel + 1
@@ -105,8 +217,9 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
   val Rx_Data_valid = Reg(Bool()) init (false)
   val Rx_Data_sel = Reg(UInt(log2Up(config.outDataWidth) bits)) init(0)
 
-  io.rx_data_payload := Rx_Data
-  io.rx_data_valid := Rx_Data_valid
+  io.rx_data.payload := Rx_Data
+  io.rx_data.valid := Rx_Data_valid
+
 
 
   val fsm = new StateMachine {
