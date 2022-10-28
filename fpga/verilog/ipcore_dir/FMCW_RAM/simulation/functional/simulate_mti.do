@@ -44,6 +44,7 @@
 # THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
 # PART OF THIS FILE AT ALL TIMES.
 #--------------------------------------------------------------------------------
+cp ../../../FMCW_RAM.mif .
  vlib work 
 vmap work work
 

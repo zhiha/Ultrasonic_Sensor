@@ -294,7 +294,9 @@ component ILA
   PORT (
     CONTROL : INOUT STD_LOGIC_VECTOR(35 DOWNTO 0);
     CLK : IN STD_LOGIC;
-    TRIG0 : IN STD_LOGIC_VECTOR(7 DOWNTO 0));
+    TRIG0 : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+	 TRIG1 : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+	 TRIG2 : IN STD_LOGIC_VECTOR(12 DOWNTO 0));
 
 end component;
 
@@ -362,23 +364,23 @@ FE_TXD3 <= cfrbds_v;
 FE_TXD4 <= cfrbds_v;
 FE_RXCLK <= CLK2;
 --FE_RX_data(0) <= FE_RXD1;
+FE_RX_data(1) <= FE_RXD2;
+FE_RX_data(2) <= FE_RXD3;
+FE_RX_data(3) <= FE_RXD4;
+FE_RX_data(4) <= FE_RXD5;
+FE_RX_data(5) <= FE_RXD6;
+FE_RX_data(6) <= FE_RXD7;
+FE_RX_data(7) <= FE_RXD8;
+FE_RX_data(8) <= FE_RXD9;
+FE_RX_data(0) <= cfrbds_v;
 --FE_RX_data(1) <= FE_RXD2;
 --FE_RX_data(2) <= FE_RXD3;
---FE_RX_data(3) <= FE_RXD4;
---FE_RX_data(4) <= FE_RXD5;
---FE_RX_data(5) <= FE_RXD6;
---FE_RX_data(6) <= FE_RXD7;
---FE_RX_data(7) <= FE_RXD8;
---FE_RX_data(8) <= FE_RXD9;
-FE_RX_data(0) <= cfrbds_v;
-FE_RX_data(1) <= '0';
-FE_RX_data(2) <= '0';
-FE_RX_data(3) <= '0';
-FE_RX_data(4) <= '0';
-FE_RX_data(5) <= '0';
-FE_RX_data(6) <= '0';
-FE_RX_data(7) <= '0';
-FE_RX_data(8) <= '0';
+--FE_RX_data(3) <= '0';
+--FE_RX_data(4) <= '0';
+--FE_RX_data(5) <= '0';
+--FE_RX_data(6) <= '0';
+--FE_RX_data(7) <= '0';
+--FE_RX_data(8) <= '0';
 FE_RX_data(9) <= '0';
 FE_RX_data(10) <= '0';
 FE_RX_data(11) <= '0';
@@ -601,10 +603,12 @@ myila : ILA
     TRIG0(1) => RMII_TXD1,
 	 TRIG0(2) => config_ing_flag,
 	 TRIG0(3) => config_done_flag,
-	 TRIG0(4) => rmiiv_s,
+	 TRIG0(4) => FIFO_FULL,
 	 TRIG0(5) => rmii0_s,
 	 TRIG0(6) => rmii1_s,
-	 TRIG0(7) => FE_RXD1
+	 TRIG0(7) => FE_RXD1,
+	 TRIG1 => cfrbds_data,
+	 TRIG2 => addr_read
    	 );
 
 RMII_RXER_SDIO_D0 <= '0';

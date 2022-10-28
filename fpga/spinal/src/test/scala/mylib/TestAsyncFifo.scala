@@ -9,13 +9,13 @@ import scala.util.Random
 
 object TestAsyncFifo {
   def main(args: Array[String]): Unit = {
-    SimConfig.withWave.compile(new AsyncFifo()).doSim {
+    SimConfig.withWave.compile(new AsyncFifo(depth = 64,pushCds = ClockDomain.external("pushCd"),popCds = ClockDomain.external("popCd",withReset = false))).doSim {
       dut =>
         dut.pushCd.forkStimulus(10)
-        dut.popCd.forkStimulus(20)
+        dut.popCd.forkStimulus(10)
         dut.io.push.payload #= 0
         dut.io.push.valid #= false
-        dut.io.pop.ready #= false
+        dut.io.pop.ready #= true
         dut.pushCd.waitRisingEdge()
         val len = 20
         for (elem <- (0 to len - 1)) {
@@ -25,7 +25,7 @@ object TestAsyncFifo {
         }
         for (elem <- (0 to len - 1)) {
           dut.io.pop.ready #= true
-          dut.pushCd.waitRisingEdge()
+          dut.popCd.waitRisingEdge()
         }
 
 

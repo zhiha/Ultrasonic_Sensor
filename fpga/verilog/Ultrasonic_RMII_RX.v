@@ -100,7 +100,7 @@ always@(posedge clk or negedge reset)begin
 		rmii_rec_data <= 0;
 		eth_type <= 0;
 		config_ing <= 0;
-		config_done <= 0;
+		config_done <= 1;
 		rmii_rec_data_update <= 0;
 	end
 	else begin
@@ -149,7 +149,7 @@ always@(posedge clk or negedge reset)begin
 							error_flag <= 1;
 						if(eth_type[15:8] == 8'h09) begin
 							config_ing <= 0;
-							config_done <= 0;
+							config_done <= 1;
 						end
 						if(eth_type[15:8] == CONFIGING) begin
 							config_ing <= 1;

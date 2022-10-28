@@ -83,5 +83,7 @@ module ila
   (
     inout [35:0] CONTROL,
     input CLK,
-    input [7:0] TRIG0);
+    input [7:0] TRIG0,
+    input [15:0] TRIG1,
+    input [12:0] TRIG2);
 endmodule

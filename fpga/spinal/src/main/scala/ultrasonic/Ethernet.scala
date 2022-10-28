@@ -4,10 +4,11 @@ import spinal.core._
 import spinal.core.sim._
 import spinal.lib._
 import spinal.lib.fsm._
+import spinal.crypto.checksum._
 
 import java.lang._
 import mylib._
-import spinal.core.Component.push
+
 
 /**
  *
@@ -25,13 +26,6 @@ import spinal.core.Component.push
  * rmii_txv<--|-------------|--->Rx_DATA[outDataWidth]
  */
 
-case class EthernetConfig( val sender:String = "fa:23:aa:60:10:6f",
-                           val receiver:String = "11:22:33:44:55:66",
-                           val inDataWidth:Int = 16,
-                           val outDataWidth:Int = 16,
-                           val curDatalen:Int = 46,
-                         )
-
 object EthernetProtocol {
   val PREAMBLE = 0x55
   val FRAMESTART = 0xd5
@@ -40,8 +34,19 @@ object EthernetProtocol {
   val CONFIGFINISH = 0x0B00
 }
 
+case class EthernetConfig( val sender:String = "fa:23:aa:60:10:6f",
+                           val receiver:String = "11:22:33:44:55:66",
+                           val preambleData:String= "55_55_55_55_55_55_55_d5",
+                           val txType: Int = EthernetProtocol.USERTYPE,
+                           val inDataWidth:Int = 16,
+                           val outDataWidth:Int = 16,
+                           val curDatalen:Int = 46,
+                         )
+
+
+
 class RMII_Ethernet(config:EthernetConfig) extends Component {
-  assert(config.outDataWidth%2==0 && config.inDataWidth%2==0,"Ethernet in/out Width should be the pow of 2!")
+  assert(config.outDataWidth%8==0 && config.inDataWidth%8==0,"Ethernet in/out Width should be the pow of 2!")
 
   val io = new Bundle {
     val rmii_rx = in Bits(2 bits)
@@ -55,6 +60,8 @@ class RMII_Ethernet(config:EthernetConfig) extends Component {
     val tx_data = slave Stream(Bits(config.inDataWidth bits))
     val tx_flag = in Bool()
 
+    val frame_send = in Bool()
+    val frame_receive = in Bool()
 
   }
 
@@ -73,6 +80,8 @@ class RMII_Ethernet(config:EthernetConfig) extends Component {
 
   io.rmii_tx <> tx.io.rmii_tx
   io.rmii_txv <> tx.io.rmii_txv
+  io.frame_send <> tx.io.frame_send
+  io.frame_receive <> tx.io.frame_receive
 
 
   io.setName("")
@@ -90,104 +99,270 @@ class RMII_TX(config:EthernetConfig) extends Component{
     val rmii_txv = out Bool()
     val tx_data = slave Stream(Bits(config.inDataWidth bits))
     val tx_flag = in Bool()
+
+    val frame_send = in Bool()
+    val frame_receive = in Bool()
   }
 
   val rmii_tx = Reg(Bits (2 bits)) init(0)
   val rmii_txv = Reg(Bool()) init(false)
   val tx_data_ready = Reg(Bool()) init(false)
 
-//  print(s"fifo depth: ${Math.pow(2,log2Up(config.curDatalen)).toInt}")
-//  val fifo = new AsyncFifo(depth = Math.pow(2,log2Up(config.curDatalen)).toInt, width = config.inDataWidth)
+
+  val crc32 = new CRCCombinational(CRCCombinationalConfig(
+    crcConfig = CRC32.Standard,
+    dataWidth = 8 bits
+  ))
+
+
+
+  val crc32_valid = Reg(Bool()) init(false)
+  val crc32_mode = Reg(CRCCombinationalCmdMode()) init(CRCCombinationalCmdMode.INIT)
+  val crc32_data = Reg(Bits(8 bits)) init(0)
+
+  crc32.io.cmd.mode := crc32_mode
+  crc32.io.cmd.valid := crc32_valid
+  crc32.io.cmd.data := crc32_data
+
 
   io.rmii_tx := rmii_tx
   io.rmii_txv := rmii_txv
 
+  tx_data_ready := False
   io.tx_data.ready := tx_data_ready
-//  fifo.io.push << io.tx_data
 
 
   val fsm = new StateMachine {
     val IDLE = new State with EntryPoint
-    val PREAMBLE = new State
-    val FRAMRESTART = new State
+    val PREAMBLE_AND_FRAMRESTART = new State
     val DESTMAC = new State
     val SOURCEMAC = new State
     val TYPE = new State
-    val TIME = new State
+    val SENDTIME = new State
+    val RECEIVETIME = new State
     val DATA = new State
     val CRC = new State
 
     val counter = Reg(UInt(16 bits)) init (0)
-    val mac = Reg(UInt(48 bits)) init (0)
-    val ethtype = Reg(UInt(16 bits)) init (0)
+    val preamble = Reg(Bits(64 bits)).init(Ethernet.parsePreamble(config.preambleData)).allowUnsetRegToAvoidLatch
+    val destmac = Reg(Bits(48 bits)).init(Ethernet.parseMacAddress(config.sender)).allowUnsetRegToAvoidLatch
+    val sourcemac = Reg(Bits(48 bits)).init(Ethernet.parseMacAddress(config.receiver)).allowUnsetRegToAvoidLatch
+    val ethtype = Reg(Bits(16 bits)).init(config.txType).allowUnsetRegToAvoidLatch
+
+    val tx_byte_sel = Reg(UInt(log2Up(config.curDatalen+1) bits)) init(0)
+    val tx_bit_sel = Reg(UInt(3 bits)) init(0)
+
+    val timer = Reg(UInt(32 bits)) init(0)
+    val frame_send_time = Reg(UInt(32 bits)) init(0)
+    val frame_receive_time = Reg(UInt(32 bits)) init(0)
+
+
+    timer := timer + 1
+
+    when(io.frame_send){
+      frame_send_time := timer
+    }
+    when(io.frame_receive){
+      frame_receive_time := timer
+    }
+
+    crc32_valid := False
 
     IDLE
       .whenIsActive{
-        tx_data_ready := False
         when(io.tx_flag){
-          goto(PREAMBLE)
+          goto(PREAMBLE_AND_FRAMRESTART)
         }
-//        when(fifo.fifo.io.pushOccupancy === U(2)){
-//
-//        }
+      }
+      .onExit{
+        tx_byte_sel := 0
+        tx_bit_sel := 0
       }
 
 
-    PREAMBLE
+    PREAMBLE_AND_FRAMRESTART
       .whenIsActive {
         rmii_txv := True
-
+        rmii_tx(0) := preamble(56+(tx_bit_sel|<<1)-(tx_byte_sel|<<3))
+        rmii_tx(1) := preamble(56+(tx_bit_sel|<<1)+1-(tx_byte_sel|<<3))
+        tx_bit_sel := tx_bit_sel + 1
+        crc32_valid := True //for init
+        when(tx_bit_sel===U(3)){
+          tx_bit_sel := 0
+          tx_byte_sel := tx_byte_sel + 1
+          when(tx_byte_sel===U(7)){
+            tx_byte_sel := 0
+            goto(DESTMAC)
+          }
+        }
       }
-
-    FRAMRESTART
-      .onEntry(counter := 0)
-      .whenIsActive {
-
-
+      .onExit{
+        tx_bit_sel := 0
+        tx_byte_sel := 0
       }
 
     DESTMAC
       .whenIsActive {
-
+        rmii_tx(0) := destmac(40 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3))
+        rmii_tx(1) := destmac(40 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3))
+        tx_bit_sel := tx_bit_sel + 1
+        when(tx_bit_sel === U(3)) {
+          tx_bit_sel := 0
+          tx_byte_sel := tx_byte_sel + 1
+          crc32_valid := True
+          crc32_mode := CRCCombinationalCmdMode.UPDATE
+          crc32_data := destmac(40-tx_byte_sel*8,8 bits)
+          when(tx_byte_sel === U(5)) {
+            tx_byte_sel := 0
+            goto(SOURCEMAC)
+          }
+        }
       }
-      .onExit(counter := 0)
+      .onExit {
+        tx_bit_sel := 0
+        tx_byte_sel := 0
+      }
 
     SOURCEMAC
       .whenIsActive {
-
-
+        rmii_tx(0) := sourcemac(40 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3))
+        rmii_tx(1) := sourcemac(40 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3))
+        tx_bit_sel := tx_bit_sel + 1
+        when(tx_bit_sel === U(3)) {
+          tx_bit_sel := 0
+          tx_byte_sel := tx_byte_sel + 1
+          crc32_valid := True
+          crc32_mode := CRCCombinationalCmdMode.UPDATE
+          crc32_data := sourcemac(40 - tx_byte_sel * 8, 8 bits)
+          when(tx_byte_sel === U(5)) {
+            tx_byte_sel := 0
+            goto(TYPE)
+          }
+        }
       }
-      .onExit(counter := 0)
+      .onExit {
+        tx_bit_sel := 0
+        tx_byte_sel := 0
+      }
 
     TYPE
       .whenIsActive {
-
-
+        rmii_tx(0) := ethtype((8 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
+        rmii_tx(1) := ethtype((8 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
+        tx_bit_sel := tx_bit_sel + 1
+        when(tx_bit_sel === U(3)) {
+          tx_bit_sel := 0
+          tx_byte_sel := tx_byte_sel + 1
+          crc32_valid := True
+          crc32_mode := CRCCombinationalCmdMode.UPDATE
+          crc32_data := ethtype(8- tx_byte_sel * 8, 8 bits)
+          when(tx_byte_sel === U(1)) {
+            tx_byte_sel := 0
+            goto(SENDTIME)
+          }
+        }
       }
-      .onExit(counter := 0)
+      .onExit {
+        tx_bit_sel := 0
+        tx_byte_sel := 0
+      }
 
-    TIME
+    SENDTIME
       .whenIsActive {
-
+        rmii_tx(0) := frame_send_time((24 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
+        rmii_tx(1) := frame_send_time((24 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
+        tx_bit_sel := tx_bit_sel + 1
+        when(tx_bit_sel === U(3)) {
+          tx_bit_sel := 0
+          tx_byte_sel := tx_byte_sel + 1
+          crc32_valid := True
+          crc32_mode := CRCCombinationalCmdMode.UPDATE
+          crc32_data := frame_send_time(24 - tx_byte_sel * 8, 8 bits).asBits
+          when(tx_byte_sel === U(1)) {
+            tx_byte_sel := 0
+            goto(RECEIVETIME)
+          }
+        }
       }
-      .onExit(counter := 0)
+      .onExit {
+        tx_bit_sel := 0
+        tx_byte_sel := 0
+      }
+
+    RECEIVETIME
+      .whenIsActive {
+        rmii_tx(0) := frame_receive_time((24 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
+        rmii_tx(1) := frame_receive_time((24 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
+        tx_bit_sel := tx_bit_sel + 1
+        when(tx_bit_sel === U(3)) {
+          tx_bit_sel := 0
+          tx_byte_sel := tx_byte_sel + 1
+          crc32_valid := True
+          crc32_mode := CRCCombinationalCmdMode.UPDATE
+          crc32_data := frame_receive_time(24 - tx_byte_sel * 8, 8 bits).asBits
+          when(tx_byte_sel === U(1)) {
+            tx_byte_sel := 0
+            goto(DATA)
+          }
+        }
+      }
+      .onExit {
+        tx_data_ready := True
+        tx_bit_sel := 0
+        tx_byte_sel := 0
+      }
 
     DATA
       .whenIsActive {
-
+        rmii_tx(0) := io.tx_data.payload((config.inDataWidth-8 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
+        rmii_tx(1) := io.tx_data.payload((config.inDataWidth-8 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
+        tx_bit_sel := tx_bit_sel + 1
+        when(tx_bit_sel === U(2)){
+          crc32_valid := True
+          crc32_mode := CRCCombinationalCmdMode.UPDATE
+          crc32_data := io.tx_data.payload(config.inDataWidth - tx_byte_sel * 8, 8 bits)
+        }
+        when(tx_bit_sel === U(3)) {
+          tx_bit_sel := 0
+          tx_byte_sel := tx_byte_sel + 1
+          tx_data_ready := True
+          when(tx_byte_sel === U(config.curDatalen-1)) {
+            tx_byte_sel := 0
+            goto(CRC)
+          }
+        }
       }
-      .onExit(counter := 0)
+      .onExit {
+        tx_data_ready := False
+        tx_bit_sel := 0
+        tx_byte_sel := 0
+      }
+
 
     CRC
       .whenIsActive{
+        rmii_tx(0) := crc32.io.crc((crc32.io.crc.getWidth - 8 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
+        rmii_tx(1) := crc32.io.crc((crc32.io.crc.getWidth - 8 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
+        tx_bit_sel := tx_bit_sel + 1
+        when(tx_bit_sel === U(3)) {
+          tx_bit_sel := 0
+          tx_byte_sel := tx_byte_sel + 1
+          when(tx_byte_sel === U(3)) {
+            tx_byte_sel := 0
+            goto(IDLE)
+          }
+        }
 
       }
-      .onExit(counter := 0)
-
+      .onExit {
+        tx_bit_sel := 0
+        tx_byte_sel := 0
+      }
 
   }
 
   io.setName("")
+  crc32.io.setName("")
 
 }
 class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
@@ -201,6 +376,8 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
   val Byte_sel = Reg(UInt(log2Up(8) bits)) init(0)
   val Byte_Data = Reg(Bits(8 bits)) init (0)
   val Byte_valid = Reg(Bool()) init (false)
+
+  val debug_rx_1 = Byte_Data(U(2),3 bits) simPublic()
 
   Byte_valid := False
   when(io.rmii_rxen) {
@@ -357,6 +534,11 @@ object Ethernet{
    */
   def parseMacAddress(mac:String):Bits = {
     val ret = B(Long.parseLong(mac.replace(":", ""), 16), 48 bits)
+    ret
+  }
+
+  def parsePreamble(preamble: String): Bits = {
+    val ret = B(Long.parseLong(preamble.replace("_", ""), 16), 64 bits)
     ret
   }
 

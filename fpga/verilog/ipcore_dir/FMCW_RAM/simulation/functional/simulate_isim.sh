@@ -46,6 +46,7 @@
 # PART OF THIS FILE AT ALL TIMES.
 #--------------------------------------------------------------------------------
 
+cp ../../../FMCW_RAM.mif .
 
 
 echo "Compiling Core Verilog UNISIM/Behavioral model"

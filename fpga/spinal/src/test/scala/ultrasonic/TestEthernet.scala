@@ -4,15 +4,18 @@ import spinal.core._
 
 import scala.collection.mutable.ArrayBuffer
 import java.lang._
+import scala.util.Random
 
 
 object TestEthernet {
   def main(args: Array[String]): Unit = {
-    SimConfig.withWave.compile(new RMII_Ethernet(EthernetConfig())).doSim{
+    val config = EthernetConfig()
+    SimConfig.withWave.compile(new RMII_Ethernet(config)).doSim{
       dut =>
         dut.clockDomain.forkStimulus(10)
         dut.io.rmii_rx #= 0
         dut.io.rmii_rxen #= false
+        dut.io.tx_flag #= false
         dut.clockDomain.waitRisingEdge()
         val frameNum = 10
         val slotNum = 100
@@ -29,6 +32,23 @@ object TestEthernet {
             dut.clockDomain.waitRisingEdge()
           }
         }
+        dut.clockDomain.waitRisingEdge()
+        dut.io.tx_flag #= true
+        dut.io.tx_data.valid #= true
+        var idx = 0
+        var flag = true
+        while(flag){
+          print(s"idx: ${idx} \n")
+          dut.clockDomain.waitRisingEdge()
+          if(dut.io.tx_data.ready.toBoolean && dut.io.tx_data.valid.toBoolean){
+            dut.io.tx_data.payload #= Random.nextInt(2500)
+            idx = idx + 1
+          }
+          if((idx / config.curDatalen) == 5){
+            flag = false
+          }
+        }
+
     }
   }
 

@@ -45,6 +45,7 @@ FMCW_RAM/simulation/timing/wave_mti.do
 FMCW_RAM/simulation/timing/wave_ncsim.sv
 FMCW_RAM.asy
 FMCW_RAM.gise
+FMCW_RAM.mif
 FMCW_RAM.ngc
 FMCW_RAM.sym
 FMCW_RAM.v

@@ -62,7 +62,6 @@ module Ultrasonic_Radar_Top_Test;
 		RMII_TXD1 = 0;
 
 		// Wait 100 ns for global reset to finish
-		// Wait 100 ns for global reset to finish
 		#300;
 		RMII_TXEN <= 1;
 		for (i = 0; i < 7; i=i+1)begin
@@ -242,16 +241,16 @@ module Ultrasonic_Radar_Top_Test;
 		#10;
 		
 		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
+		RMII_TXD1 <= 0;
 		#10;
 		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
+		RMII_TXD1 <= 0;
 		#10;
 		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
+		RMII_TXD1 <= 0;
 		#10;
 		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
+		RMII_TXD1 <= 0;
 		#10;
 		RMII_TXEN <= 0;
 		RMII_TXD0 <= 0;
@@ -259,7 +258,7 @@ module Ultrasonic_Radar_Top_Test;
 		
         
 		// Add stimulus here
-		#800;
+		#100;
 		RMII_TXEN <= 1;
 		for (i = 0; i < 7; i=i+1)begin
 			RMII_TXD0 <= 1;
@@ -424,26 +423,26 @@ module Ultrasonic_Radar_Top_Test;
 		#10;
 		
 		//data
-		RMII_TXD0 <= 1;
+		RMII_TXD0 <= 0;
 		RMII_TXD1 <= 1;
 		#10;
-		RMII_TXD0 <= 1;
+		RMII_TXD0 <= 0;
 		RMII_TXD1 <= 1;
 		#10;
-		RMII_TXD0 <= 1;
+		RMII_TXD0 <= 0;
 		RMII_TXD1 <= 1;
 		#10;
-		RMII_TXD0 <= 1;
+		RMII_TXD0 <= 0;
 		RMII_TXD1 <= 1;
 		#10;
 		
-		RMII_TXD0 <= 1;
+		RMII_TXD0 <= 0;
 		RMII_TXD1 <= 1;
 		#10;
 		RMII_TXD0 <= 1;
 		RMII_TXD1 <= 1;
 		#10;
-		RMII_TXD0 <= 1;
+		RMII_TXD0 <= 0;
 		RMII_TXD1 <= 1;
 		#10;
 		RMII_TXD0 <= 1;
@@ -626,10 +625,10 @@ module Ultrasonic_Radar_Top_Test;
 		RMII_TXD0 <= 1;
 		RMII_TXD1 <= 1;
 		#10;
-		RMII_TXD0 <= 1;
+		RMII_TXD0 <= 0;
 		RMII_TXD1 <= 1;
 		#10;
-		RMII_TXD0 <= 1;
+		RMII_TXD0 <= 0;
 		RMII_TXD1 <= 1;
 		#10;
 		
@@ -640,10 +639,10 @@ module Ultrasonic_Radar_Top_Test;
 		RMII_TXD1 <= 1;
 		#10;
 		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
+		RMII_TXD1 <= 0;
 		#10;
 		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
+		RMII_TXD1 <= 0;
 		#10;
 		RMII_TXEN <= 0;
 		RMII_TXD0 <= 0;

@@ -71,8 +71,10 @@ module example_ila
   //****************************************************************************
   //  Local Parameters
   //****************************************************************************
-  parameter C_NUM_OF_TRIGPORTS = 1;
+  parameter C_NUM_OF_TRIGPORTS = 3;
   parameter C_TRIG0_SIZE = 8;
+  parameter C_TRIG1_SIZE = 16;
+  parameter C_TRIG2_SIZE = 13;
 
 
   //****************************************************************************
@@ -81,6 +83,8 @@ module example_ila
   wire clk;
   wire [35:0] control0;
   wire [C_TRIG0_SIZE-1:0] trig_0;
+  wire [C_TRIG1_SIZE-1:0] trig_1;
+  wire [C_TRIG2_SIZE-1:0] trig_2;
   wire [C_NUM_OF_TRIGPORTS:0] en_out_int;
 
 
@@ -113,6 +117,46 @@ module example_ila
        .en_out(en_out_int[1]),
        .shiftout(trig_0));
 
+  //-----------------------------------------------------------------
+  //
+  //  For TRIG1
+  //
+  //-----------------------------------------------------------------
+  // This shift register takes enable_in from the previous shift register and 
+  // registers enable_out.Size of shift register is given as TRIG1 width.
+  // Output of shift register is mapped TRIG1. en_out of this shift_reg 
+  // instance can be used as en_in for next shift_reg instance.Each trigger port 
+  // in the design can be distinguished by its pulse width.TRIG0 signals 
+  // are of shorter width than those of TRIG1.
+
+  shift_reg
+    #(.WIDTH(C_TRIG1_SIZE))
+    U_SHIFT_REGISTER_1
+      (
+       .clk(clk),
+       .en_in(en_out_int[1]),
+       .en_out(en_out_int[2]),
+       .shiftout(trig_1));
+  //-----------------------------------------------------------------
+  //
+  //  For TRIG2
+  //
+  //-----------------------------------------------------------------
+  // This shift register takes enable_in from the previous shift register and 
+  // registers enable_out.Size of shift register is given as TRIG2 width.
+  // Output of shift register is mapped TRIG2. en_out of this shift_reg 
+  // instance can be used as en_in for next shift_reg instance.Each trigger port 
+  // in the design can be distinguished by its pulse width.TRIG1 signals 
+  // are of shorter width than those of TRIG2.
+
+  shift_reg
+    #(.WIDTH(C_TRIG2_SIZE))
+    U_SHIFT_REGISTER_2
+      (
+       .clk(clk),
+       .en_in(en_out_int[2]),
+       .en_out(en_out_int[3]),
+       .shiftout(trig_2));
 
   //-----------------------------------------------------------------
   //
@@ -154,7 +198,9 @@ module example_ila
     (
       .CONTROL(control0), // INOUT BUS [35:0]
       .CLK(clk), // IN
-      .TRIG0(trig_0)); // IN BUS [7:0] 
+      .TRIG0(trig_0), // IN BUS [7:0] 
+      .TRIG1(trig_1), // IN BUS [15:0] 
+      .TRIG2(trig_2)); // IN BUS [12:0] 
 
 
 endmodule

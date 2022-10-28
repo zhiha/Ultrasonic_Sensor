@@ -1,0 +1,68 @@
+Running: /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/unwrapped/fuse -relaunch -intstyle "ise" -incremental -lib "unisims_ver" -lib "unimacro_ver" -lib "xilinxcorelib_ver" -lib "secureip" -o "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_MUL_Top_Test_isim_beh.exe" -prj "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_MUL_Top_Test_beh.prj" "work.Ultrasonic_Radar_MUL_Top_Test" "work.glbl" 
+ISim P.20131013 (signature 0xfbc00daa)
+Number of CPUs detected in this system: 4
+Turning on mult-threading, number of parallel sub-compilation jobs: 8 
+Determining compilation order of HDL files
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/ipcore_dir/PLL_IP.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_RMII_TX_MULCHN.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_RMII_RX.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Reset.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_PDM_FIFO_MUL.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/RMIIRX_TO_RAM.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/RAM_TO_CFRBDS.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/ipcore_dir/MIC_MULCHANNEL_FIFO.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/ipcore_dir/ila.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/ipcore_dir/icon.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/ipcore_dir/FMCW_RAM.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/CRCCombinational.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/CFRBDS.v" into library work
+Analyzing Verilog file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_MUL_Top_Test.v" into library work
+Analyzing Verilog file "/opt/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v" into library work
+Parsing VHDL file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_Top.vhd" into library work
+Starting static elaboration
+Completed static elaboration
+Fuse Memory Usage: 102356 KB
+Fuse CPU Usage: 1760 ms
+Compiling module Ultrasonic_Reset
+Compiling module PLL_ADV(BANDWIDTH="OPTIMIZED",CL...
+Compiling module PLL_BASE(CLKFBOUT_MULT=8,CLKIN_P...
+Compiling module BUFG
+Compiling module PLL_IP
+Compiling module Ultrasonic_RMII_RX
+Compiling module RMIIRX_TO_RAM
+Compiling module BLK_MEM_GEN_V7_3_output_stage(C_...
+Compiling module BLK_MEM_GEN_V7_3_softecc_output_...
+Compiling module BLK_MEM_GEN_V7_3_mem_module(C_CO...
+Compiling module BLK_MEM_GEN_V7_3(C_FAMILY="spart...
+Compiling module FMCW_RAM
+Compiling module RAM_TO_CFRBDS
+Compiling module CFRBUnit
+Compiling module CFRBUnit_1
+Compiling module CFRBUnit_2
+Compiling module CFRBUnit_3
+Compiling module CFRBUnit_4
+Compiling module CFRBDS
+Compiling module Ultrasonic_PDM_FIFO_MUL
+Compiling module fifo_generator_v9_3_sync_stage(C...
+Compiling module fifo_generator_v9_3_bhv_ver_as(C...
+Compiling module FIFO_GENERATOR_V9_3_CONV_VER(C_C...
+Compiling module FIFO_GENERATOR_V9_3(C_DATA_COUNT...
+Compiling module MIC_MULCHANNEL_FIFO
+Compiling module Ultrasonic_RMII_TX_MULCHN
+Compiling module CRCCombinational
+Compiling module icon
+Compiling module ila
+Compiling module Ultrasonic_Radar_MUL_Top_Test
+Compiling module glbl
+Compiling package standard
+Compiling package std_logic_1164
+Compiling package vl_types
+Compiling architecture behavioral of entity Ultrasonic_Radar_Top [ultrasonic_radar_top_default]
+Time Resolution for simulation is 1ps.
+Waiting for 1 sub-compilation(s) to finish...
+Compiled 5 VHDL Units
+Compiled 31 Verilog Units
+Built simulation executable /home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_MUL_Top_Test_isim_beh.exe
+Fuse Memory Usage: 680172 KB
+Fuse CPU Usage: 5090 ms
+GCC CPU Usage: 3120 ms

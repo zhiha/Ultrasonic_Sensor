@@ -45,6 +45,7 @@
 # PART OF THIS FILE AT ALL TIMES.
 #--------------------------------------------------------------------------------
 #!/bin/sh
+cp ../../../FMCW_RAM.mif .
 rm -rf simv* csrc DVEfiles AN.DB
 
 echo "Compiling Core Verilog UNISIM/Behavioral model"

@@ -61,7 +61,6 @@ always@(posedge clk or negedge reset)begin
 					reset_cnt <= 0;
 					state <= state + 1;
 				end
-				enb <= 1;
 			end
 			else if(state==1) begin
 				cfrbds_data <= 0;
@@ -70,12 +69,16 @@ always@(posedge clk or negedge reset)begin
 				if(reset_cnt == 3) begin
 					reset_cnt <= 0;
 					state <= state + 1;
+					enb <= 1;
 				end
-				enb <= 1;
 			end
 			else if(state==2) begin
 				enb <= 1;
-				cfrbds_data <= 0;
+				read_addr <= read_addr + 1;
+				state <= state + 1;
+			end	
+			else if(state==3) begin
+				enb <= 1;
 				cfrbds_flush <= 0;
 				cfrbds_data <= fmcw_data;
 				read_addr <= read_addr + 1;
@@ -84,7 +87,6 @@ always@(posedge clk or negedge reset)begin
 					finish_flag <= 1;
 				end
 				if(read_addr == 3999) begin
-//					state <= 0;
 					txflag <= 0;
 					read_addr <= 0;
 				end
