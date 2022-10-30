@@ -381,6 +381,16 @@ FE_RX_data(0) <= cfrbds_v;
 --FE_RX_data(6) <= '0';
 --FE_RX_data(7) <= '0';
 --FE_RX_data(8) <= '0';
+--FE_RX_data(0) <= cfrbds_v;
+--FE_RX_data(1) <= '0';
+--FE_RX_data(2) <= '0';
+--FE_RX_data(3) <= '0';
+--FE_RX_data(4) <= '0';
+--FE_RX_data(5) <= '0';
+--FE_RX_data(6) <= '0';
+--FE_RX_data(7) <= '0';
+--FE_RX_data(8) <= '0';
+
 FE_RX_data(9) <= '0';
 FE_RX_data(10) <= '0';
 FE_RX_data(11) <= '0';
