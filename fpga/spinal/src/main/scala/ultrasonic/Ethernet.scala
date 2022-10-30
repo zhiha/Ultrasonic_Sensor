@@ -40,7 +40,7 @@ case class EthernetConfig( val sender:String = "fa:23:aa:60:10:6f",
                            val txType: Int = EthernetProtocol.USERTYPE,
                            val inDataWidth:Int = 16,
                            val outDataWidth:Int = 16,
-                           val curDatalen:Int = 46,
+                           val curDatalen:Int = 46
                          )
 
 
@@ -553,8 +553,3 @@ object Ethernet{
     SpinalConfig(anonymSignalPrefix = "tmp").generateVerilog(Ethernet.generate()).printPruned()
   }
 }
-
-
-
-
-
