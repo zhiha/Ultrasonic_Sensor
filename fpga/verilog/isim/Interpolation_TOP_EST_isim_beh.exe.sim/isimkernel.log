@@ -1,0 +1,28 @@
+Command line:
+   Interpolation_TOP_EST_isim_beh.exe
+     -simmode  gui
+     -simrunnum  0
+     -socket  43510
+
+Sun Oct 30 08:43:51 2022
+
+
+ Elaboration Time: 0.19 sec
+
+ Current Memory Usage: 199.795 Meg
+
+ Total Signals          : 177
+ Total Nets             : 757
+ Total Signal Drivers   : 86
+ Total Blocks           : 23
+ Total Primitive Blocks : 18
+ Total Processes        : 103
+ Total Traceable Variables  : 357
+ Total Scalar Nets and Variables : 150737
+
+ Total Simulation Time: 0.31 sec
+
+ Current Memory Usage: 277.393 Meg
+
+Sun Oct 30 08:46:05 2022
+
