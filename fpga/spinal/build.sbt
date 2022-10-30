@@ -10,7 +10,8 @@ val spinalIdslPlugin = compilerPlugin("com.github.spinalhdl" %% "spinalhdl-idsl-
 lazy val mylib = (project in file("."))
   .settings(
     name := "Spinal-ZHIHA",
-    libraryDependencies ++= Seq(spinalCore, spinalLib, spinalIdslPlugin)
+    libraryDependencies ++= Seq(spinalCore, spinalLib, spinalIdslPlugin) ,
+    Compile / unmanagedClasspath += baseDirectory.value / "tools" / "crypto" / "src" / "main"
   )
 
 fork := true
