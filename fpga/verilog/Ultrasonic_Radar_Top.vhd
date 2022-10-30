@@ -148,6 +148,22 @@ port(
 );
 end component;
 
+component RAM_TO_CFRBDS_With_Interpolation
+port(
+	clk: in STD_LOGIC;
+	reset: in STD_LOGIC;
+	fmcw_data: in STD_LOGIC_VECTOR(15 DOWNTO 0);
+	read_start: in STD_LOGIC;
+	tx_flag: in STD_LOGIC;
+	finish_flag: out STD_LOGIC;
+	enb: out STD_LOGIC;
+	read_addr: out STD_LOGIC_VECTOR(12 DOWNTO 0);
+	cfrbds_data: out STD_LOGIC_VECTOR(15 DOWNTO 0);
+	cfrbds_reset: out STD_LOGIC;
+	cfrbds_flush: out STD_LOGIC
+);
+end component;
+
 component CFRBDS
 port
 (
@@ -464,7 +480,22 @@ port map(
 	doutb => data_read
 );
 
-RAM_TO_CFRBDS_1: RAM_TO_CFRBDS
+--RAM_TO_CFRBDS_1: RAM_TO_CFRBDS
+--port map(
+--	clk => CLK2,
+--	reset => SYSRESET,
+--	enb => enb,
+--	finish_flag => finish_flag,
+--	tx_flag => tx_flag,
+--	fmcw_data => data_read,
+--	read_start => config_done_flag,
+--	read_addr => addr_read,
+--	cfrbds_data => cfrbds_data,
+--	cfrbds_reset => cfrbds_reset,
+--	cfrbds_flush => cfrbds_flush
+--);
+
+RAM_TO_CFRBDS_With_Interpolation_1: RAM_TO_CFRBDS_With_Interpolation
 port map(
 	clk => CLK2,
 	reset => SYSRESET,

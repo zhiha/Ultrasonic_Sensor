@@ -32,6 +32,10 @@ module RAM_TO_CFRBDS_With_Interpolation(
 	output reg cfrbds_flush
     );
 
+localparam pulse_num_one_frame = 8;
+localparam pulse_slot = 100;
+localparam frame_slot = 10000;
+
 reg [1:0] reset_cnt = 0;
 reg [3:0] state = 0;
 reg reset_flag = 0;
@@ -45,7 +49,11 @@ wire[15:0] fushu_inter_value;
 
 reg [3:0] inter_cnt = 0;
 
-assign subtract_value = state==3 ? (fmcw_data - init_value):(fmcw_data - next_value);
+reg [3:0] pulse_cnt = 0;
+reg [15:0] slot_cnt = 0;
+
+
+assign subtract_value = state==4 ? (fmcw_data - init_value):(fmcw_data - next_value);
 assign fushu_transform = (~subtract_value+1);
 assign fushu_inter_value = fushu_transform >> 3;
 
@@ -99,15 +107,17 @@ always@(posedge clk or negedge reset)begin
 				next_value <= fmcw_data;
 			end
 			else if(state==5) begin
+				finish_flag <= 0;
 				cfrbds_data <= init_value;
 				init_value <= init_value + inter_value;
 				inter_cnt <= inter_cnt + 1;
 				if(inter_cnt == 5)begin
 					enb <= 1;
 					read_addr <= read_addr + 1;
-					if(read_addr == 4999) begin
-						txflag <= 0;
+					if(read_addr == 3999) begin
+//						txflag <= 0;
 						read_addr <= 0;
+						finish_flag <= 1;
 					end
 				end
 				if(inter_cnt == 7)begin
@@ -118,10 +128,6 @@ always@(posedge clk or negedge reset)begin
 					init_value <= next_value;
 					next_value <= fmcw_data;
 					inter_cnt <= 0;
-				end
-				finish_flag <= 0;
-				if(read_addr == 0)begin
-					finish_flag <= 1;
 				end
 			end	
 		end
@@ -142,7 +148,7 @@ always@(posedge clk or negedge reset)begin
 			end
 			read_addr <= 0;
 			state <= 0;
-			txflag <= 0;
+//			txflag <= 0;
 		end
 	end
 end

@@ -101,1034 +101,1034 @@ module Ultrasonic_Radar_MUL_Top_Test;
 		// Wait 100 ns for global reset to finish
 		// Wait 100 ns for global reset to finish
 		#300;
-		RMII_TXEN <= 1;
-		for (i = 0; i < 7; i=i+1)begin
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		end
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		
-		for (i = 0; i < 2; i=i+1)begin
-		//11
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//22
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//33
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//44
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		//55
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		//66
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		end
-		
-		//0a00
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		//len  2
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		//data
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;	
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;	
-		#10;
-		RMII_TXEN <= 0;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;		
-		
-        
-		// Add stimulus here
-		#800;
-		RMII_TXEN <= 1;
-		for (i = 0; i < 7; i=i+1)begin
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		end
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		
-		for (i = 0; i < 2; i=i+1)begin
-		//11
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//22
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//33
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//44
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		//55
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		//66
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		end
-		
-		//0a00
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		//len  2
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		//data
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;	
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;	
-		#10;
-		RMII_TXEN <= 0;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		
-		
-		
-		#800;
-		RMII_TXEN <= 1;
-		for (i = 0; i < 7; i=i+1)begin
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		end
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		
-		for (i = 0; i < 2; i=i+1)begin
-		//11
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//22
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//33
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//44
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		//55
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		//66
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		end
-		
-		//0a00
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		//len  2
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		//data
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;	
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;	
-		#10;
-		RMII_TXEN <= 0;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		
-		#800;
-		RMII_TXEN <= 1;
-		for (i = 0; i < 7; i=i+1)begin
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		end
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		
-		for (i = 0; i < 2; i=i+1)begin
-		//11
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//22
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//33
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//44
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		//55
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		//66
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		end
-		
-		//0a00
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		//len  2
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		//data
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;	
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;	
-		#10;
-		RMII_TXEN <= 0;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		
-		#800;
-		RMII_TXEN <= 1;
-		for (i = 0; i < 7; i=i+1)begin
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		end
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		
-		for (i = 0; i < 2; i=i+1)begin
-		//11
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//22
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//33
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-		//44
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		//55
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		//66
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-			RMII_TXD0 <= 0;
-			RMII_TXD1 <= 1;
-			#10;
-			RMII_TXD0 <= 1;
-			RMII_TXD1 <= 0;
-			#10;
-		end
-		
-		//0b00
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		//len  2
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		
-		//data
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXD0 <= 1;
-		RMII_TXD1 <= 1;
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;	
-		#10;
-		RMII_TXEN <= 1;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;	
-		#10;
-		RMII_TXEN <= 0;
-		RMII_TXD0 <= 0;
-		RMII_TXD1 <= 0;		
+//		RMII_TXEN <= 1;
+//		for (i = 0; i < 7; i=i+1)begin
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		end
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		
+//		for (i = 0; i < 2; i=i+1)begin
+//		//11
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//22
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//33
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//44
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//55
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//66
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		end
+//		
+//		//0a00
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		//len  2
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		//data
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;	
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;	
+//		#10;
+//		RMII_TXEN <= 0;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;		
+//		
+//        
+//		// Add stimulus here
+//		#800;
+//		RMII_TXEN <= 1;
+//		for (i = 0; i < 7; i=i+1)begin
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		end
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		
+//		for (i = 0; i < 2; i=i+1)begin
+//		//11
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//22
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//33
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//44
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//55
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//66
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		end
+//		
+//		//0a00
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		//len  2
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		//data
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;	
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;	
+//		#10;
+//		RMII_TXEN <= 0;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		
+//		
+//		
+//		#800;
+//		RMII_TXEN <= 1;
+//		for (i = 0; i < 7; i=i+1)begin
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		end
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		
+//		for (i = 0; i < 2; i=i+1)begin
+//		//11
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//22
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//33
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//44
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//55
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//66
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		end
+//		
+//		//0a00
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		//len  2
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		//data
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;	
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;	
+//		#10;
+//		RMII_TXEN <= 0;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		
+//		#800;
+//		RMII_TXEN <= 1;
+//		for (i = 0; i < 7; i=i+1)begin
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		end
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		
+//		for (i = 0; i < 2; i=i+1)begin
+//		//11
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//22
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//33
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//44
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//55
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//66
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		end
+//		
+//		//0a00
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		//len  2
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		//data
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;	
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;	
+//		#10;
+//		RMII_TXEN <= 0;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		
+//		#800;
+//		RMII_TXEN <= 1;
+//		for (i = 0; i < 7; i=i+1)begin
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		end
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		
+//		for (i = 0; i < 2; i=i+1)begin
+//		//11
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//22
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//33
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//44
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//55
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		//66
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//			RMII_TXD0 <= 0;
+//			RMII_TXD1 <= 1;
+//			#10;
+//			RMII_TXD0 <= 1;
+//			RMII_TXD1 <= 0;
+//			#10;
+//		end
+//		
+//		//0b00
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		//len  2
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		
+//		//data
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXD0 <= 1;
+//		RMII_TXD1 <= 1;
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;	
+//		#10;
+//		RMII_TXEN <= 1;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;	
+//		#10;
+//		RMII_TXEN <= 0;
+//		RMII_TXD0 <= 0;
+//		RMII_TXD1 <= 0;		
 	end
 	
 	always #5 RF215_CLKO = ~ RF215_CLKO;
