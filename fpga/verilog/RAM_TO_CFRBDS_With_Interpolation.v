@@ -52,6 +52,8 @@ reg [3:0] inter_cnt = 0;
 reg [3:0] pulse_cnt = 0;
 reg [15:0] slot_cnt = 0;
 
+reg flag_1 = 0;
+
 
 assign subtract_value = state==4 ? (fmcw_data - init_value):(fmcw_data - next_value);
 assign fushu_transform = (~subtract_value+1);
@@ -115,9 +117,10 @@ always@(posedge clk or negedge reset)begin
 					enb <= 1;
 					read_addr <= read_addr + 1;
 					if(read_addr == 3999) begin
-//						txflag <= 0;
-						read_addr <= 0;
+						enb <= 0;
+						read_addr <= read_addr;
 						finish_flag <= 1;
+						flag_1 <= 1;
 					end
 				end
 				if(inter_cnt == 7)begin
@@ -128,8 +131,23 @@ always@(posedge clk or negedge reset)begin
 					init_value <= next_value;
 					next_value <= fmcw_data;
 					inter_cnt <= 0;
+					if(flag_1)begin
+						state <= state + 1;
+						flag_1 <= 0;
+					end
 				end
-			end	
+			end
+			else if(state==6)begin
+				cfrbds_flush <= 1;
+				cfrbds_data <= 0;
+				read_addr <= 0;
+				slot_cnt <= slot_cnt + 1;
+				if(slot_cnt==1000)begin
+					slot_cnt <= 0;
+					state <= 1;
+					reset_cnt <= 3;
+				end
+			end
 		end
 		else begin
 			if(!reset_flag) begin
@@ -148,7 +166,6 @@ always@(posedge clk or negedge reset)begin
 			end
 			read_addr <= 0;
 			state <= 0;
-//			txflag <= 0;
 		end
 	end
 end

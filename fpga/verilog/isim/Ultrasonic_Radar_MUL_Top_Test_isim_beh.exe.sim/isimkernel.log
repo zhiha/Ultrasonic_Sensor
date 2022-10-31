@@ -1,0 +1,10 @@
+Command line:
+   Ultrasonic_Radar_MUL_Top_Test_isim_beh.exe
+     -simmode  gui
+     -simrunnum  0
+     -socket  42587
+
+Mon Oct 31 03:53:34 2022
+
+
+ Elaboration Time: 0.52 sec
