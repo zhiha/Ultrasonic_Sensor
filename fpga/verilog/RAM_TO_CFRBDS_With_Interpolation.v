@@ -53,6 +53,7 @@ reg [3:0] pulse_cnt = 0;
 reg [15:0] slot_cnt = 0;
 
 reg flag_1 = 0;
+reg flag_2 = 0;
 
 
 assign subtract_value = state==4 ? (fmcw_data - init_value):(fmcw_data - next_value);
@@ -69,6 +70,7 @@ always@(posedge clk or negedge reset)begin
 	end
 	else begin
 		enb <= 0;
+		finish_flag <= 0;
 		if(read_start) begin
 			if(state==0) begin
 				cfrbds_data <= 0;
@@ -107,9 +109,9 @@ always@(posedge clk or negedge reset)begin
 				else
 					inter_value <= subtract_value>>3;
 				next_value <= fmcw_data;
+				finish_flag <= 1;
 			end
 			else if(state==5) begin
-				finish_flag <= 0;
 				cfrbds_data <= init_value;
 				init_value <= init_value + inter_value;
 				inter_cnt <= inter_cnt + 1;
@@ -117,10 +119,12 @@ always@(posedge clk or negedge reset)begin
 					enb <= 1;
 					read_addr <= read_addr + 1;
 					if(read_addr == 3999) begin
-						enb <= 0;
-						read_addr <= read_addr;
-						finish_flag <= 1;
+						read_addr <= 0;
 						flag_1 <= 1;
+					end
+					if(flag_1)begin
+						enb <= 0;
+						flag_2 <= 1;
 					end
 				end
 				if(inter_cnt == 7)begin
@@ -131,9 +135,10 @@ always@(posedge clk or negedge reset)begin
 					init_value <= next_value;
 					next_value <= fmcw_data;
 					inter_cnt <= 0;
-					if(flag_1)begin
+					if(flag_1 && flag_2)begin
 						state <= state + 1;
 						flag_1 <= 0;
+						flag_2 <= 0;
 					end
 				end
 			end

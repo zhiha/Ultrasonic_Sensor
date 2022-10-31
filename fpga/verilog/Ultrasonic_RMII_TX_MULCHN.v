@@ -86,6 +86,7 @@ reg [31:0] Time_Cnt = 0;
 reg [15:0] Time_loop = 0;
 reg Time_flag = 0;
 reg txflag = 0;
+reg finish_flag_delay = 0;
 
 initial begin 
 	PREAMBLE[0] <= 8'h55;                 
@@ -122,6 +123,10 @@ end
 //					TRANSMIT DATA TO ARM            //
 
 //Time module
+always@(negedge clk)begin
+	finish_flag_delay <= finish_flag;
+end
+
 always@(negedge clk or negedge reset)begin
 	if(!reset)begin
 		Time_Cnt <= 0;
@@ -133,8 +138,8 @@ always@(negedge clk or negedge reset)begin
 			Time_loop <= 0;
 			Time_Cnt <= Time_Cnt + 1;
 		end
-		if(finish_flag)begin
-			Time_Send <= Time_Cnt;
+		if(finish_flag && (~finish_flag_delay))begin
+			Time_Send <= Time_Send + 1;
 		end
 	end
 end

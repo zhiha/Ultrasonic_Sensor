@@ -893,11 +893,14 @@ LAB22:    xsi_set_current_line(133, ng0);
 LAB23:    xsi_set_current_line(136, ng0);
 
 LAB26:    xsi_set_current_line(137, ng0);
-    t5 = (t0 + 7584);
+    t5 = (t0 + 7264);
     t6 = (t5 + 56U);
     t12 = *((char **)t6);
-    t13 = (t0 + 7264);
-    xsi_vlogvar_wait_assign_value(t13, t12, 0, 0, 32, 0LL);
+    t13 = ((char*)((ng3)));
+    memset(t4, 0, 8);
+    xsi_vlog_unsigned_add(t4, 32, t12, 32, t13, 32);
+    t19 = (t0 + 7264);
+    xsi_vlogvar_wait_assign_value(t19, t4, 0, 0, 32, 0LL);
     goto LAB25;
 
 }
