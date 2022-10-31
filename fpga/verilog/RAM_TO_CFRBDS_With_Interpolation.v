@@ -109,16 +109,16 @@ always@(posedge clk or negedge reset)begin
 				else
 					inter_value <= subtract_value>>3;
 				next_value <= fmcw_data;
-				finish_flag <= 1;
 			end
 			else if(state==5) begin
+				finish_flag <= 1;
 				cfrbds_data <= init_value;
 				init_value <= init_value + inter_value;
 				inter_cnt <= inter_cnt + 1;
 				if(inter_cnt == 5)begin
 					enb <= 1;
 					read_addr <= read_addr + 1;
-					if(read_addr == 3999) begin
+					if(read_addr == 4999) begin
 						read_addr <= 0;
 						flag_1 <= 1;
 					end
