@@ -60,8 +60,8 @@ class RMII_Ethernet(config:EthernetConfig) extends Component {
     val tx_data = slave Stream(Bits(config.inDataWidth bits))
     val tx_flag = in Bool()
 
-    val frame_send = in Bool()
-    val frame_receive = in Bool()
+    val pulse_send = in Bool()
+
 
   }
 
@@ -80,8 +80,7 @@ class RMII_Ethernet(config:EthernetConfig) extends Component {
 
   io.rmii_tx <> tx.io.rmii_tx
   io.rmii_txv <> tx.io.rmii_txv
-  io.frame_send <> tx.io.frame_send
-  io.frame_receive <> tx.io.frame_receive
+  io.pulse_send <> tx.io.pulse_send
 
 
   io.setName("")
@@ -100,8 +99,7 @@ class RMII_TX(config:EthernetConfig) extends Component{
     val tx_data = slave Stream(Bits(config.inDataWidth bits))
     val tx_flag = in Bool()
 
-    val frame_send = in Bool()
-    val frame_receive = in Bool()
+    val pulse_send = in Bool()
   }
 
   val rmii_tx = Reg(Bits (2 bits)) init(0)
@@ -115,7 +113,6 @@ class RMII_TX(config:EthernetConfig) extends Component{
   ))
 
 
-
   val crc32_valid = Reg(Bool()) init(false)
   val crc32_mode = Reg(CRCCombinationalCmdMode()) init(CRCCombinationalCmdMode.INIT)
   val crc32_data = Reg(Bits(8 bits)) init(0)
@@ -123,7 +120,6 @@ class RMII_TX(config:EthernetConfig) extends Component{
   crc32.io.cmd.mode := crc32_mode
   crc32.io.cmd.valid := crc32_valid
   crc32.io.cmd.data := crc32_data
-
 
   io.rmii_tx := rmii_tx
   io.rmii_txv := rmii_txv
@@ -138,12 +134,11 @@ class RMII_TX(config:EthernetConfig) extends Component{
     val DESTMAC = new State
     val SOURCEMAC = new State
     val TYPE = new State
-    val SENDTIME = new State
-    val RECEIVETIME = new State
+    val PULSESTAMP = new State
     val DATA = new State
     val CRC = new State
 
-    val counter = Reg(UInt(16 bits)) init (0)
+
     val preamble = Reg(Bits(64 bits)).init(Ethernet.parsePreamble(config.preambleData)).allowUnsetRegToAvoidLatch
     val destmac = Reg(Bits(48 bits)).init(Ethernet.parseMacAddress(config.sender)).allowUnsetRegToAvoidLatch
     val sourcemac = Reg(Bits(48 bits)).init(Ethernet.parseMacAddress(config.receiver)).allowUnsetRegToAvoidLatch
@@ -152,24 +147,37 @@ class RMII_TX(config:EthernetConfig) extends Component{
     val tx_byte_sel = Reg(UInt(log2Up(config.curDatalen+1) bits)) init(0)
     val tx_bit_sel = Reg(UInt(3 bits)) init(0)
 
-    val timer = Reg(UInt(32 bits)) init(0)
-    val frame_send_time = Reg(UInt(32 bits)) init(0)
-    val frame_receive_time = Reg(UInt(32 bits)) init(0)
+    val pulse_send_seq = Reg(UInt(16 bits)) init(0)
+    val pulse_send = Reg(Bool()) init(false)
 
-
-    timer := timer + 1
-
-    when(io.frame_send){
-      frame_send_time := timer
-    }
-    when(io.frame_receive){
-      frame_receive_time := timer
-    }
+    val debug_data = Reg(Bits( 8 bits)) init(0)
+    val debug_sel = Reg(UInt( 3 bits)) init(0)
+    val debug_valid = Reg(Bool()) init(false)
 
     crc32_valid := False
+    debug_valid := False
+    pulse_send := io.pulse_send
+
+    when(rmii_txv) {
+      debug_data(debug_sel|<<1) := rmii_tx(0)
+      debug_data((debug_sel|<<1)+1) := rmii_tx(1)
+      debug_sel := debug_sel + 1
+      when(debug_sel === U(3)) {
+        debug_sel := 0
+        debug_valid := True
+      }
+    }
+
+    when(pulse_send && (~Delay(pulse_send,1))){
+      pulse_send_seq := pulse_send_seq + 1
+    }
+
+
 
     IDLE
       .whenIsActive{
+        rmii_txv := False
+        crc32_mode := CRCCombinationalCmdMode.INIT
         when(io.tx_flag){
           goto(PREAMBLE_AND_FRAMRESTART)
         }
@@ -178,6 +186,7 @@ class RMII_TX(config:EthernetConfig) extends Component{
         tx_byte_sel := 0
         tx_bit_sel := 0
       }
+
 
 
     PREAMBLE_AND_FRAMRESTART
@@ -258,7 +267,7 @@ class RMII_TX(config:EthernetConfig) extends Component{
           crc32_data := ethtype(8- tx_byte_sel * 8, 8 bits)
           when(tx_byte_sel === U(1)) {
             tx_byte_sel := 0
-            goto(SENDTIME)
+            goto(PULSESTAMP)
           }
         }
       }
@@ -267,39 +276,17 @@ class RMII_TX(config:EthernetConfig) extends Component{
         tx_byte_sel := 0
       }
 
-    SENDTIME
+    PULSESTAMP
       .whenIsActive {
-        rmii_tx(0) := frame_send_time((24 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
-        rmii_tx(1) := frame_send_time((24 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
+        rmii_tx(0) := pulse_send_seq((8 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
+        rmii_tx(1) := pulse_send_seq((8 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
         tx_bit_sel := tx_bit_sel + 1
         when(tx_bit_sel === U(3)) {
           tx_bit_sel := 0
           tx_byte_sel := tx_byte_sel + 1
           crc32_valid := True
           crc32_mode := CRCCombinationalCmdMode.UPDATE
-          crc32_data := frame_send_time(24 - tx_byte_sel * 8, 8 bits).asBits
-          when(tx_byte_sel === U(1)) {
-            tx_byte_sel := 0
-            goto(RECEIVETIME)
-          }
-        }
-      }
-      .onExit {
-        tx_bit_sel := 0
-        tx_byte_sel := 0
-      }
-
-    RECEIVETIME
-      .whenIsActive {
-        rmii_tx(0) := frame_receive_time((24 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
-        rmii_tx(1) := frame_receive_time((24 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
-        tx_bit_sel := tx_bit_sel + 1
-        when(tx_bit_sel === U(3)) {
-          tx_bit_sel := 0
-          tx_byte_sel := tx_byte_sel + 1
-          crc32_valid := True
-          crc32_mode := CRCCombinationalCmdMode.UPDATE
-          crc32_data := frame_receive_time(24 - tx_byte_sel * 8, 8 bits).asBits
+          crc32_data := pulse_send_seq(8 - tx_byte_sel * 8, 8 bits).asBits
           when(tx_byte_sel === U(1)) {
             tx_byte_sel := 0
             goto(DATA)
@@ -341,8 +328,8 @@ class RMII_TX(config:EthernetConfig) extends Component{
 
     CRC
       .whenIsActive{
-        rmii_tx(0) := crc32.io.crc((crc32.io.crc.getWidth - 8 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
-        rmii_tx(1) := crc32.io.crc((crc32.io.crc.getWidth - 8 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
+        rmii_tx(0) := crc32.io.crc(((tx_bit_sel |<< 1) + (tx_byte_sel |<< 3)).resized)
+        rmii_tx(1) := crc32.io.crc(((tx_bit_sel |<< 1) + 1 + (tx_byte_sel |<< 3)).resized)
         tx_bit_sel := tx_bit_sel + 1
         when(tx_bit_sel === U(3)) {
           tx_bit_sel := 0
@@ -352,7 +339,6 @@ class RMII_TX(config:EthernetConfig) extends Component{
             goto(IDLE)
           }
         }
-
       }
       .onExit {
         tx_bit_sel := 0
@@ -379,6 +365,10 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
 
   val debug_rx_1 = Byte_Data(U(2),3 bits) simPublic()
 
+  val Rx_Data = Reg(Bits(config.outDataWidth bits)) init (0)
+  val Rx_Data_valid = Reg(Bool()) init (false)
+  val Rx_Data_sel = Reg(UInt(log2Up(config.outDataWidth/8) bits)) init(0)
+
   Byte_valid := False
   when(io.rmii_rxen) {
     Byte_Data(Byte_sel|<<1) := io.rmii_rx(0)
@@ -390,13 +380,8 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
     }
   }
 
-  val Rx_Data = Reg(Bits(config.outDataWidth bits)) init (0)
-  val Rx_Data_valid = Reg(Bool()) init (false)
-  val Rx_Data_sel = Reg(UInt(log2Up(config.outDataWidth) bits)) init(0)
-
   io.rx_data.payload := Rx_Data
   io.rx_data.valid := Rx_Data_valid
-
 
 
   val fsm = new StateMachine {
@@ -407,7 +392,7 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
     val TYPE = new State
     val DATALEN = new State
     val DATA = new State
-    val CRC = new State
+
 
     val counter = Reg(UInt(16 bits)) init (0)
     val mac = Reg(UInt(48 bits)) init (0)
@@ -418,11 +403,11 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
     io.fe_flag := fe_flag
 
     Rx_Data_valid := False
-    when(io.rmii_rxen) {
+
+    when(Byte_valid && isActive(DATA)){
+      Rx_Data(config.outDataWidth - 8 + Rx_Data_sel*8,8 bits) := Byte_Data
       Rx_Data_sel := Rx_Data_sel + 1
-      Rx_Data(Rx_Data_sel |<< 1) := io.rmii_rx(0)
-      Rx_Data((Rx_Data_sel |<< 1) + 1) := io.rmii_rx(1)
-      when(Rx_Data_sel === U((config.outDataWidth / 2 - 1).toInt, log2Up(config.outDataWidth) bits) && isActive(DATA)) {
+      when(Rx_Data_sel === U((config.outDataWidth/8)-1)){
         Rx_Data_sel := 0
         Rx_Data_valid := True
       }
@@ -491,7 +476,7 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
           goto(PREAMBLE)
         }
         when(counter === 2 && ethtype === EthernetProtocol.USERTYPE) {
-          fe_flag := True
+          fe_flag := False
           goto(DATALEN)
         }
       }

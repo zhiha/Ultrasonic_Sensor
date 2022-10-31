@@ -16,6 +16,7 @@ object TestEthernet {
         dut.io.rmii_rx #= 0
         dut.io.rmii_rxen #= false
         dut.io.tx_flag #= false
+        dut.io.pulse_send #= false
         dut.clockDomain.waitRisingEdge()
         val frameNum = 10
         val slotNum = 100
@@ -37,11 +38,15 @@ object TestEthernet {
         dut.io.tx_data.valid #= true
         var idx = 0
         var flag = true
+        val value = 0
+        dut.io.tx_data.payload #= value
+        print("value : " + value + "\n")
         while(flag){
-          print(s"idx: ${idx} \n")
           dut.clockDomain.waitRisingEdge()
           if(dut.io.tx_data.ready.toBoolean && dut.io.tx_data.valid.toBoolean){
-            dut.io.tx_data.payload #= Random.nextInt(2500)
+            val value = 0//Random.nextInt(2500)
+            print("value : " + value + "\n")
+            dut.io.tx_data.payload #= value
             idx = idx + 1
           }
           if((idx / config.curDatalen) == 5){
