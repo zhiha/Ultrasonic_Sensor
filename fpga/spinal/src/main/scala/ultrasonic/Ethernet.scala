@@ -172,6 +172,13 @@ class RMII_TX(config:EthernetConfig) extends Component{
       pulse_send_seq := pulse_send_seq + 1
     }
 
+    when(~isActive(IDLE)){
+      tx_bit_sel := tx_bit_sel + 1
+      when(tx_bit_sel === U(3)){
+        tx_bit_sel := 0
+        tx_byte_sel := tx_byte_sel + 1
+      }
+    }
 
 
     IDLE
@@ -194,11 +201,8 @@ class RMII_TX(config:EthernetConfig) extends Component{
         rmii_txv := True
         rmii_tx(0) := preamble(56+(tx_bit_sel|<<1)-(tx_byte_sel|<<3))
         rmii_tx(1) := preamble(56+(tx_bit_sel|<<1)+1-(tx_byte_sel|<<3))
-        tx_bit_sel := tx_bit_sel + 1
         crc32_valid := True //for init
         when(tx_bit_sel===U(3)){
-          tx_bit_sel := 0
-          tx_byte_sel := tx_byte_sel + 1
           when(tx_byte_sel===U(7)){
             tx_byte_sel := 0
             goto(DESTMAC)
@@ -214,10 +218,7 @@ class RMII_TX(config:EthernetConfig) extends Component{
       .whenIsActive {
         rmii_tx(0) := destmac(40 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3))
         rmii_tx(1) := destmac(40 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3))
-        tx_bit_sel := tx_bit_sel + 1
         when(tx_bit_sel === U(3)) {
-          tx_bit_sel := 0
-          tx_byte_sel := tx_byte_sel + 1
           crc32_valid := True
           crc32_mode := CRCCombinationalCmdMode.UPDATE
           crc32_data := destmac(40-tx_byte_sel*8,8 bits)
@@ -236,10 +237,7 @@ class RMII_TX(config:EthernetConfig) extends Component{
       .whenIsActive {
         rmii_tx(0) := sourcemac(40 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3))
         rmii_tx(1) := sourcemac(40 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3))
-        tx_bit_sel := tx_bit_sel + 1
         when(tx_bit_sel === U(3)) {
-          tx_bit_sel := 0
-          tx_byte_sel := tx_byte_sel + 1
           crc32_valid := True
           crc32_mode := CRCCombinationalCmdMode.UPDATE
           crc32_data := sourcemac(40 - tx_byte_sel * 8, 8 bits)
@@ -258,10 +256,7 @@ class RMII_TX(config:EthernetConfig) extends Component{
       .whenIsActive {
         rmii_tx(0) := ethtype((8 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
         rmii_tx(1) := ethtype((8 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
-        tx_bit_sel := tx_bit_sel + 1
         when(tx_bit_sel === U(3)) {
-          tx_bit_sel := 0
-          tx_byte_sel := tx_byte_sel + 1
           crc32_valid := True
           crc32_mode := CRCCombinationalCmdMode.UPDATE
           crc32_data := ethtype(8- tx_byte_sel * 8, 8 bits)
@@ -280,10 +275,7 @@ class RMII_TX(config:EthernetConfig) extends Component{
       .whenIsActive {
         rmii_tx(0) := pulse_send_seq((8 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
         rmii_tx(1) := pulse_send_seq((8 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
-        tx_bit_sel := tx_bit_sel + 1
         when(tx_bit_sel === U(3)) {
-          tx_bit_sel := 0
-          tx_byte_sel := tx_byte_sel + 1
           crc32_valid := True
           crc32_mode := CRCCombinationalCmdMode.UPDATE
           crc32_data := pulse_send_seq(8 - tx_byte_sel * 8, 8 bits).asBits
@@ -303,15 +295,12 @@ class RMII_TX(config:EthernetConfig) extends Component{
       .whenIsActive {
         rmii_tx(0) := io.tx_data.payload((config.inDataWidth-8 + (tx_bit_sel |<< 1) - (tx_byte_sel |<< 3)).resized)
         rmii_tx(1) := io.tx_data.payload((config.inDataWidth-8 + (tx_bit_sel |<< 1) + 1 - (tx_byte_sel |<< 3)).resized)
-        tx_bit_sel := tx_bit_sel + 1
         when(tx_bit_sel === U(2)){
           crc32_valid := True
           crc32_mode := CRCCombinationalCmdMode.UPDATE
           crc32_data := io.tx_data.payload(config.inDataWidth - tx_byte_sel * 8, 8 bits)
         }
         when(tx_bit_sel === U(3)) {
-          tx_bit_sel := 0
-          tx_byte_sel := tx_byte_sel + 1
           tx_data_ready := True
           when(tx_byte_sel === U(config.curDatalen-1)) {
             tx_byte_sel := 0
@@ -330,10 +319,7 @@ class RMII_TX(config:EthernetConfig) extends Component{
       .whenIsActive{
         rmii_tx(0) := crc32.io.crc(((tx_bit_sel |<< 1) + (tx_byte_sel |<< 3)).resized)
         rmii_tx(1) := crc32.io.crc(((tx_bit_sel |<< 1) + 1 + (tx_byte_sel |<< 3)).resized)
-        tx_bit_sel := tx_bit_sel + 1
         when(tx_bit_sel === U(3)) {
-          tx_bit_sel := 0
-          tx_byte_sel := tx_byte_sel + 1
           when(tx_byte_sel === U(3)) {
             tx_byte_sel := 0
             goto(IDLE)
@@ -346,6 +332,8 @@ class RMII_TX(config:EthernetConfig) extends Component{
       }
 
   }
+
+
 
   io.setName("")
   crc32.io.setName("")
@@ -401,7 +389,6 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
     val Rx_Data_len = Reg(UInt(16 bits)) init(0)
 
     io.fe_flag := fe_flag
-
     Rx_Data_valid := False
 
     when(Byte_valid && isActive(DATA)){
