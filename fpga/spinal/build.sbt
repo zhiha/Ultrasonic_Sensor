@@ -11,8 +11,9 @@ lazy val mylib = (project in file("."))
   .settings(
     name := "Spinal-ZHIHA",
     libraryDependencies ++= Seq(spinalCore, spinalLib, spinalIdslPlugin) ,
-    Compile / unmanagedSourceDirectories += baseDirectory.value / "tools" / "crypto" / "src" / "main" / "scala",
-    Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "test" / "scala"
+    Compile / unmanagedSourceDirectories += baseDirectory.value / "tools" / "crypto" / "crypto" / "src" / "main" / "scala",
+    Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "test" / "scala",
+    Compile / unmanagedSourceDirectories += baseDirectory.value / "tools" / "sigmadelta" / "src" / "main" / "scala"
   )
 
 fork := true

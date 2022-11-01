@@ -1,6 +1,6 @@
-[submodule "fpga/spinal/TARGET_FOLDER"]
-	path = fpga/spinal/TARGET_FOLDER
+[submodule "fpga/spinal/tools/crypto"]
+	path = fpga/spinal/tools/crypto
 	url = git@github.com:SpinalHDL/SpinalCrypto.git
-[submodule "fpga/spinal/tools"]
-	path = fpga/spinal/tools
-	url = git@github.com:SpinalHDL/SpinalCrypto.git
+[submodule "fpga/spinal/tools/sigmadelta"]
+	path = fpga/spinal/tools/sigmadelta
+	url = git@gitee.com:thubcc/zlib.git
