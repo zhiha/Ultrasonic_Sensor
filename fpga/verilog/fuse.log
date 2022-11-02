@@ -1,4 +1,4 @@
-Running: /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/unwrapped/fuse -relaunch -intstyle "ise" -incremental -lib "unisims_ver" -lib "unimacro_ver" -lib "xilinxcorelib_ver" -lib "secureip" -o "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_MUL_Top_Test_isim_beh.exe" -prj "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_MUL_Top_Test_beh.prj" "work.Ultrasonic_Radar_MUL_Top_Test" "work.glbl" 
+Running: /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/unwrapped/fuse -relaunch -intstyle "ise" -incremental -lib "unisims_ver" -lib "unimacro_ver" -lib "xilinxcorelib_ver" -lib "secureip" -o "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_MUL_Top_Test_isim_beh.exe" -prj "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_MUL_Top_Test_beh.prj" "Ultrasonic_Radar_MUL_Top_Test" "work.glbl" 
 ISim P.20131013 (signature 0xfbc00daa)
 Number of CPUs detected in this system: 4
 Turning on mult-threading, number of parallel sub-compilation jobs: 8 
@@ -21,14 +21,11 @@ Analyzing Verilog file "/opt/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v" into li
 Parsing VHDL file "/home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_Top.vhd" into library work
 Starting static elaboration
 Completed static elaboration
-Fuse Memory Usage: 100880 KB
-Fuse CPU Usage: 1820 ms
+Fuse Memory Usage: 102212 KB
+Fuse CPU Usage: 1840 ms
 Compiling module Ultrasonic_Reset
-Compiling module dcm_sp_clock_divide_by_2
-Compiling module dcm_sp_maximum_period_check(cloc...
-Compiling module dcm_sp_maximum_period_check(cloc...
-Compiling module dcm_sp_clock_lost
-Compiling module DCM_SP(CLKDV_DIVIDE=6.5,CLKFX_DI...
+Compiling module PLL_ADV(BANDWIDTH="OPTIMIZED",CL...
+Compiling module PLL_BASE(CLKFBOUT_MULT=8,CLKIN_P...
 Compiling module BUFG
 Compiling module PLL_IP
 Compiling module Ultrasonic_RMII_RX
@@ -64,8 +61,8 @@ Compiling architecture behavioral of entity Ultrasonic_Radar_Top [ultrasonic_rad
 Time Resolution for simulation is 1ps.
 Waiting for 1 sub-compilation(s) to finish...
 Compiled 5 VHDL Units
-Compiled 34 Verilog Units
+Compiled 31 Verilog Units
 Built simulation executable /home/ise/Share/Ultrasonic_Sensor/fpga/verilog/Ultrasonic_Radar_MUL_Top_Test_isim_beh.exe
-Fuse Memory Usage: 670624 KB
-Fuse CPU Usage: 5590 ms
-GCC CPU Usage: 4270 ms
+Fuse Memory Usage: 680072 KB
+Fuse CPU Usage: 5320 ms
+GCC CPU Usage: 3100 ms

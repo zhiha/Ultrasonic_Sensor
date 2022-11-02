@@ -2,9 +2,9 @@ Command line:
    Ultrasonic_Radar_MUL_Top_Test_isim_beh.exe
      -simmode  gui
      -simrunnum  0
-     -socket  59384
+     -socket  60224
 
-Mon Oct 31 08:26:58 2022
+Wed Nov  2 03:03:47 2022
 
 
- Elaboration Time: 0.52 sec
+ Elaboration Time: 0.46 sec

@@ -23,8 +23,7 @@ module RAM_TO_CFRBDS(
 	input reset,
 	input [15:0] fmcw_data,
 	input read_start, 
-	input tx_flag,
-	output reg finish_flag,
+	output reg start_flag,
 	output reg enb,	
 	output reg [12:0] read_addr,
 	output reg [15:0] cfrbds_data,
@@ -35,7 +34,6 @@ module RAM_TO_CFRBDS(
 reg [1:0] reset_cnt = 0;
 reg [1:0] state = 0;
 reg reset_flag = 0;
-reg txflag = 0;
 
 
 always@(posedge clk or negedge reset)begin
@@ -48,10 +46,7 @@ always@(posedge clk or negedge reset)begin
 	end
 	else begin
 		enb <= 0;
-		if(tx_flag)begin
-			txflag <= 1;
-		end
-		if(read_start) begin //&&txflag
+		if(read_start) begin 
 			if(state==0) begin
 				cfrbds_data <= 0;
 				cfrbds_reset <= 1;
@@ -82,12 +77,11 @@ always@(posedge clk or negedge reset)begin
 				cfrbds_flush <= 0;
 				cfrbds_data <= fmcw_data;
 				read_addr <= read_addr + 1;
-				finish_flag <= 0;
+				start_flag <= 0;
 				if(read_addr == 0)begin
-					finish_flag <= 1;
+					start_flag <= 1;
 				end
 				if(read_addr == 3999) begin
-					txflag <= 0;
 					read_addr <= 0;
 				end
 			end	
@@ -109,7 +103,6 @@ always@(posedge clk or negedge reset)begin
 			end
 			read_addr <= 0;
 			state <= 0;
-			txflag <= 0;
 		end
 	end
 end

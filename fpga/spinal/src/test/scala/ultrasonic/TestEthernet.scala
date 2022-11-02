@@ -1,7 +1,10 @@
 package ultrasonic
+import org.apache.commons.io.FileUtils
 import spinal.core.sim._
 import spinal.core._
+import spinal.sim.Backend.isWindows
 
+import java.io.File
 import scala.collection.mutable.ArrayBuffer
 import java.lang._
 import scala.util.Random

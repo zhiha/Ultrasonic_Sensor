@@ -37,8 +37,7 @@ module Ultrasonic_RMII_TX_MULCHN(
 	output reg [0:0] crc_mode,
 	output reg [7:0] crc_din,
 	output reg crc_din_valid,
-	input finish_flag,
-	input tx_flag
+	input start_flag
 	
     );
 
@@ -65,28 +64,27 @@ reg [15:0] TX_BYTE_NUM = 0;
 
 //state machine
 reg [7:0] cur_state = ST_IDLE;
-//tx action flag
-reg start = 0;
-reg [24:0] start_cnt = 0;
 //bit_sel 
 reg [4:0] bit_sel = 0;
 //byte_cnt
 reg [3:0] bt_cnt = 0;
-//reg [4:0] left = 0;
-//reg [4:0] right = 7;
+
 reg crc_action_flag = 0;
 reg crc_last_flag = 0;
 reg [15:0] byte_cnt = 0;
 reg [7:0] byte_tmp = 0;
 //time_stap cnt
-reg [31:0] Time_Debug = 0;
 reg [31:0] Time_Send = 0;
 reg [31:0] Time_Recive = 0;
-reg [31:0] Time_Cnt = 0;
-reg [15:0] Time_loop = 0;
+
+reg [15:0] frame_cnt = 0;
+
+reg [31:0] debug_cnt = 0;
+
+
 reg Time_flag = 0;
-reg txflag = 0;
-reg finish_flag_delay = 0;
+
+reg start_flag_delay = 0;
 
 initial begin 
 	PREAMBLE[0] <= 8'h55;                 
@@ -124,44 +122,23 @@ end
 
 //Time module
 always@(negedge clk)begin
-	finish_flag_delay <= finish_flag;
+	debug_cnt <= debug_cnt + 1;
+	start_flag_delay <= start_flag;
 end
 
 always@(negedge clk or negedge reset)begin
 	if(!reset)begin
-		Time_Cnt <= 0;
-		Time_loop <= 0;
+		Time_Send <= 0;
 	end
 	else begin
-		Time_loop <= Time_loop + 1;
-		if(Time_loop==1000)begin
-			Time_loop <= 0;
-			Time_Cnt <= Time_Cnt + 1;
-		end
-		if(finish_flag && (~finish_flag_delay))begin
+		if(start_flag && (~start_flag_delay))begin
 			Time_Send <= Time_Send + 1;
+			frame_cnt <= 0;
 		end
 	end
 end
 
 
-
-//generate transmit signal flag
-always@(negedge clk or negedge reset) begin
-	if(!reset)
-		start_cnt <= 0;
-	else begin
-		start <= 0;
-		start_cnt <= start_cnt + 1;
-		if(start_cnt == 85535*4) begin
-			start_cnt <= 0;
-			start <= 1;
-		end
-		if(tx_flag)begin
-			txflag <= 1;
-		end
-	end
-end
 //Tx data procedure
 always@(negedge clk or negedge reset) begin
 	if(!reset)begin
@@ -180,9 +157,9 @@ always@(negedge clk or negedge reset) begin
 				crc_mode <= 1'b0;
 				if(rmii_tx_done) begin
 					TX_BYTE_NUM <= rmii_tx_len;
-					Time_Recive <= Time_Cnt;
+					Time_Recive <= Time_Recive + 1;
 					cur_state <= ST_PREAMBLE;
-					Time_Debug <= Time_Debug + 1;
+					frame_cnt <= frame_cnt + 1;
 				end
 			end
 			ST_PREAMBLE: begin

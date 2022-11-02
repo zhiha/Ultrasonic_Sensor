@@ -29,8 +29,7 @@ module Ultrasonic_RMII_RX(
 	output reg rmii_rec_data_done,
 	output reg [15:0] rmii_rec_byte_num,
 	output reg config_ing,
-	output reg config_done,
-	output reg tx_flag
+	output reg config_done
     );
 
 localparam BOARD_MAC = 48'h11_22_33_44_55_66;
@@ -45,7 +44,7 @@ localparam ST_RX_END = 7'b010_0000;
 
 localparam CONFIGING = 8'h0a;
 localparam CONFIGFINISH = 8'h0b;
-localparam TXFLAG = 8'h0c;
+
 
 reg [6:0] state = ST_IDLE;
 reg [7:0] byte_data;
@@ -104,7 +103,6 @@ always@(posedge clk or negedge reset)begin
 		rmii_rec_data_update <= 0;
 	end
 	else begin
-		tx_flag <= 0;
 		error_flag <= 0;
 		rmii_rec_data_update <= 0;
 		rmii_rec_data_done <= 0;
@@ -159,10 +157,6 @@ always@(posedge clk or negedge reset)begin
 							state <= ST_RX_END;
 							config_ing <= 0;
 							config_done <= 1;
-						end
-						if(eth_type[15:8] == TXFLAG) begin
-							state <= ST_RX_END;
-							tx_flag <= 1;
 						end
 					end
 				end

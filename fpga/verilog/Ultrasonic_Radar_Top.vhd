@@ -96,8 +96,7 @@ port
 	rmii_rec_byte_num: out STD_LOGIC_VECTOR(15 DOWNTO 0);
 	rmii_rec_data_done: out STD_LOGIC;
 	config_done: out STD_LOGIC;
-	config_ing: out STD_LOGIC;
-	tx_flag: out STD_LOGIC
+	config_ing: out STD_LOGIC
 );
 end component;
 
@@ -138,8 +137,7 @@ port(
 	reset: in STD_LOGIC;
 	fmcw_data: in STD_LOGIC_VECTOR(15 DOWNTO 0);
 	read_start: in STD_LOGIC;
-	tx_flag: in STD_LOGIC;
-	finish_flag: out STD_LOGIC;
+	start_flag: out STD_LOGIC;
 	enb: out STD_LOGIC;
 	read_addr: out STD_LOGIC_VECTOR(12 DOWNTO 0);
 	cfrbds_data: out STD_LOGIC_VECTOR(15 DOWNTO 0);
@@ -154,8 +152,7 @@ port(
 	reset: in STD_LOGIC;
 	fmcw_data: in STD_LOGIC_VECTOR(15 DOWNTO 0);
 	read_start: in STD_LOGIC;
-	tx_flag: in STD_LOGIC;
-	finish_flag: out STD_LOGIC;
+	start_flag: out STD_LOGIC;
 	enb: out STD_LOGIC;
 	read_addr: out STD_LOGIC_VECTOR(12 DOWNTO 0);
 	cfrbds_data: out STD_LOGIC_VECTOR(15 DOWNTO 0);
@@ -175,62 +172,19 @@ port
 );
 end component;
 
---component Ultrasonic_PDM_TO_FIFO
---port
---(
---	clk: in STD_LOGIC;
---	reset: in STD_LOGIC;
---	bit_data: in STD_LOGIC;
---	byte_data: out STD_LOGIC_VECTOR(7 DOWNTO 0);
---	byte_data_valid: out STD_LOGIC;
---	byte_data_done: out STD_LOGIC;
---	byte_num: out STD_LOGIC_VECTOR(15 DOWNTO 0)
---);
---end component;
-
 component Ultrasonic_PDM_FIFO_MUL
 port
 (
 	clk: in STD_LOGIC;
 	reset: in STD_LOGIC;
 	fe_rx: in STD_LOGIC_VECTOR(17 DOWNTO 0);
+	start_flag: in STD_LOGIC;
 	fe_rx_data: out STD_LOGIC_VECTOR(17 DOWNTO 0);
 	fe_rx_data_valid: out STD_LOGIC;
 	fe_rx_data_done: out STD_LOGIC;
 	byte_num: out STD_LOGIC_VECTOR(15 DOWNTO 0)
 );
 end component;
-
---component Ultrasonic_BRAM_TO_FIFO
---port
---(
---	clk: in STD_LOGIC;
---	reset: in STD_LOGIC;
---	fmcw_data: in STD_LOGIC_VECTOR(15 DOWNTO 0);
---	read_start: in STD_LOGIC;
---	enb: out STD_LOGIC;
---	read_addr: out STD_LOGIC_VECTOR(12 DOWNTO 0);
---	bram_data: out STD_LOGIC_VECTOR(7 DOWNTO 0);
---	byte_data_valid: out STD_LOGIC;
---	byte_data_done: out STD_LOGIC;
---	byte_num: out STD_LOGIC_VECTOR(15 DOWNTO 0)
---);
---end component;
-
---component FIFO_MIC
---port
---(
---	rst             : in std_logic;
---   wr_clk          : in std_logic;
---	rd_clk          : in std_logic;
---   din             : in STD_LOGIC_VECTOR(7 DOWNTO 0);
---   wr_en           : in std_logic;
---   rd_en           : in std_logic;
---   dout            : out STD_LOGIC_VECTOR(7 DOWNTO 0);
---   full            : out std_logic;
---   empty           : out std_logic
---);
---end component;
 
 component MIC_MULCHANNEL_FIFO
 port
@@ -247,25 +201,6 @@ port
 );
 end component;
 
---component Ultrasonic_RMII_TX
---port
---(
---	clk: in STD_LOGIC;
---	reset: in STD_LOGIC;
---	rmii_tx_len : in STD_LOGIC_VECTOR(15 DOWNTO 0);
---	rmii_tx_data : in STD_LOGIC_VECTOR(7 DOWNTO 0);
---	rmii_tx_en: out STD_LOGIC;
---	rmii_tx_done: in STD_LOGIC;
---	rmii0: out STD_LOGIC;
---	rmii1: out STD_LOGIC;
---	rmiiv: out STD_LOGIC;
---	crc_dout: in STD_LOGIC_VECTOR(31 DOWNTO 0);
---	crc_mode: out STD_LOGIC_VECTOR(0 DOWNTO 0);
---	crc_din: out STD_LOGIC_VECTOR(7 DOWNTO 0);
---	crc_din_valid: out STD_LOGIC;
---	tx_flag: in STD_LOGIC
---);
---end component;
 component Ultrasonic_RMII_TX_MULCHN
 port
 (
@@ -282,8 +217,7 @@ port
 	crc_mode: out STD_LOGIC_VECTOR(0 DOWNTO 0);
 	crc_din: out STD_LOGIC_VECTOR(7 DOWNTO 0);
 	crc_din_valid: out STD_LOGIC;
-	finish_flag: in STD_LOGIC;
-	tx_flag: in STD_LOGIC
+	start_flag: in STD_LOGIC
 );
 end component;
 
@@ -335,7 +269,7 @@ signal data_read: STD_LOGIC_VECTOR(15 DOWNTO 0);
 signal wea_en: STD_LOGIC_VECTOR(0 DOWNTO 0);
 signal ena: STD_LOGIC;
 signal enb: STD_LOGIC;
-signal tx_flag: STD_LOGIC;
+
 
 signal cfrbds_data: STD_LOGIC_VECTOR(15 DOWNTO 0);
 signal cfrbds_flush: STD_LOGIC;
@@ -364,7 +298,7 @@ signal rmii0_s: STD_LOGIC;
 signal rmii1_s: STD_LOGIC;
 signal rmiiv_s: STD_LOGIC;
 
-signal finish_flag: STD_LOGIC;
+signal start_flag: STD_LOGIC;
 
 signal CONTROL_ila : STD_LOGIC_VECTOR(35 DOWNTO 0) ;
 
@@ -447,8 +381,7 @@ port map(
 	rmii_rec_data_done => rec_data_done,
 	rmii_rec_byte_num => rec_byte_num,
 	config_done => config_done_flag,
-	config_ing => config_ing_flag,
-	tx_flag => tx_flag
+	config_ing => config_ing_flag
 );
 
 
@@ -480,28 +413,12 @@ port map(
 	doutb => data_read
 );
 
---RAM_TO_CFRBDS_1: RAM_TO_CFRBDS
---port map(
---	clk => CLK2,
---	reset => SYSRESET,
---	enb => enb,
---	finish_flag => finish_flag,
---	tx_flag => tx_flag,
---	fmcw_data => data_read,
---	read_start => config_done_flag,
---	read_addr => addr_read,
---	cfrbds_data => cfrbds_data,
---	cfrbds_reset => cfrbds_reset,
---	cfrbds_flush => cfrbds_flush
---);
-
 RAM_TO_CFRBDS_With_Interpolation_1: RAM_TO_CFRBDS_With_Interpolation
 port map(
 	clk => CLK2,
 	reset => SYSRESET,
 	enb => enb,
-	finish_flag => finish_flag,
-	tx_flag => tx_flag,
+	start_flag => start_flag,
 	fmcw_data => data_read,
 	read_start => config_done_flag,
 	read_addr => addr_read,
@@ -519,55 +436,18 @@ port map(
 	io_v => cfrbds_v
 );
 
---Ultrasonic_PDM_TO_FIFO_1: Ultrasonic_PDM_TO_FIFO
---port map(
---	clk => CLK2,
---	reset => SYSRESET,
---	bit_data => FE_RXD1,--cfrbds_v,
---	byte_data => PDM_byte_data,
---	byte_num => PDM_byte_num,
---	byte_data_valid => PDM_byte_data_valid,
---	byte_data_done => PDM_byte_data_done
---);
-
 Ultrasonic_PDM_FIFO_MUL_1: Ultrasonic_PDM_FIFO_MUL
 port map(
 	clk => CLK2,
 	reset => SYSRESET,
-	fe_rx => FE_RX_data,--cfrbds_v,
+	fe_rx => FE_RX_data,
+	start_flag => start_flag,
 	fe_rx_data => PDM_byte_data,
 	byte_num => PDM_byte_num,
 	fe_rx_data_valid => PDM_byte_data_valid,
 	fe_rx_data_done => PDM_byte_data_done
 );
 
---Ultrasonic_BRAM_TO_FIFO_1: Ultrasonic_BRAM_TO_FIFO
---port map(
---	clk => CLK2,
---	reset => SYSRESET,
---	fmcw_data => data_read,
---	read_start  => config_done_flag,
---	enb => enb,
---	read_addr => addr_read,
---	bram_data => PDM_byte_data,
---	byte_num => PDM_byte_num,
---	byte_data_valid => PDM_byte_data_valid,
---	byte_data_done => PDM_byte_data_done	
---);
-
---FIFO_MIC_1: FIFO_MIC
---port map
---(
---	rst  => RESET,
---   wr_clk  => CLK2,
---	rd_clk  => CLK1,
---   din  => PDM_byte_data,
---   wr_en => PDM_byte_data_valid,
---   rd_en => FIFO_RD_EN,
---   dout => FIFO_RD_DATA,
---   full => FIFO_FULL,
---   empty => FIFO_EMPTY
---);
 MIC_MULCHANNEL_FIFO_1: MIC_MULCHANNEL_FIFO
 port map
 (
@@ -582,24 +462,6 @@ port map
    empty => FIFO_EMPTY
 );
 
---Ultrasonic_RMII_TX_1: Ultrasonic_RMII_TX
---port map
---(
---	clk => CLK1,
---	reset => SYSRESET,
---	rmii_tx_len => PDM_byte_num,
---	rmii_tx_data => FIFO_RD_DATA,
---	rmii_tx_en => FIFO_RD_EN,
---	rmii_tx_done => PDM_byte_data_done,
---	rmii0 => rmii0_s,
---	rmii1 => rmii1_s,
---	rmiiv => rmiiv_s,
---	crc_dout=> crc_dout,
---	crc_mode => crc_mode,
---	crc_din => crc_din,
---	crc_din_valid => crc_din_valid,
---	tx_flag => tx_flag
---);
 
 Ultrasonic_RMII_TX_MULCHN_1: Ultrasonic_RMII_TX_MULCHN
 port map
@@ -617,8 +479,7 @@ port map
 	crc_mode => crc_mode,
 	crc_din => crc_din,
 	crc_din_valid => crc_din_valid,
-	finish_flag => finish_flag,
-	tx_flag => tx_flag
+	start_flag => start_flag
 );
 
 CRCCombinational_1 : CRCCombinational

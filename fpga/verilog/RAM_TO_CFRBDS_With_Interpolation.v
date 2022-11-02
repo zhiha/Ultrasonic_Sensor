@@ -23,8 +23,7 @@ module RAM_TO_CFRBDS_With_Interpolation(
 	input reset,
 	input [15:0] fmcw_data,
 	input read_start, 
-	input tx_flag,
-	output reg finish_flag,
+	output reg start_flag,
 	output reg enb,	
 	output reg [12:0] read_addr,
 	output reg [15:0] cfrbds_data,
@@ -70,7 +69,7 @@ always@(posedge clk or negedge reset)begin
 	end
 	else begin
 		enb <= 0;
-		finish_flag <= 0;
+		start_flag <= 0;
 		if(read_start) begin
 			if(state==0) begin
 				cfrbds_data <= 0;
@@ -101,6 +100,7 @@ always@(posedge clk or negedge reset)begin
 				cfrbds_flush <= 0;
 				init_value <= fmcw_data;
 				state <= state + 1;
+				start_flag <= 1;
 			end
 			else if(state==4) begin
 				state <= state + 1;
@@ -111,7 +111,6 @@ always@(posedge clk or negedge reset)begin
 				next_value <= fmcw_data;
 			end
 			else if(state==5) begin
-				finish_flag <= 1;
 				cfrbds_data <= init_value;
 				init_value <= init_value + inter_value;
 				inter_cnt <= inter_cnt + 1;

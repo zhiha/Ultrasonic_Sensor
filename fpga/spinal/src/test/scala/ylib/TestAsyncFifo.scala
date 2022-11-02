@@ -1,15 +1,12 @@
-package mylib
-
-import spinal.core.sim._
+package ylib
 import spinal.core._
+import spinal.core.sim._
 
 import scala.util.Random
 
-
-
 object TestAsyncFifo {
   def main(args: Array[String]): Unit = {
-    SimConfig.withWave.compile(new AsyncFifo(depth = 64,pushCd= ClockDomain.external("pushCd"),popCd= ClockDomain.external("popCd",withReset = false))).doSim {
+    SimConfig.withWave.compile(new AsyncFifo(depth = 64, pushCd = ClockDomain.external("pushCd"), popCd = ClockDomain.external("popCd", withReset = false))).doSim {
       dut =>
         dut.pushCd.forkStimulus(10)
         dut.popCd.forkStimulus(10)
