@@ -1,13 +1,11 @@
-package ultrasonic
+package ultrasonic.ethernet
 
 import spinal.core._
 import spinal.core.sim._
+import spinal.crypto.checksum._
 import spinal.lib._
 import spinal.lib.fsm._
-import spinal.crypto.checksum._
-
 import java.lang._
-import mylib._
 
 
 /**
@@ -37,7 +35,7 @@ object EthernetProtocol {
 case class EthernetConfig( val sender:String = "fa:23:aa:60:10:6f",
                            val receiver:String = "11:22:33:44:55:66",
                            val preambleData:String= "55_55_55_55_55_55_55_d5",
-                           val txType: Int = EthernetProtocol.USERTYPE,
+                           val ethType: Int = EthernetProtocol.USERTYPE,
                            val inDataWidth:Int = 16,
                            val outDataWidth:Int = 16,
                            val curDatalen:Int = 46
@@ -45,7 +43,7 @@ case class EthernetConfig( val sender:String = "fa:23:aa:60:10:6f",
 
 
 
-class RMII_Ethernet(config:EthernetConfig) extends Component {
+class RMII_Ethernet(config:EthernetConfig = EthernetConfig()) extends Component {
   assert(config.outDataWidth%8==0 && config.inDataWidth%8==0,"Ethernet in/out Width should be the pow of 2!")
 
   val io = new Bundle {
@@ -61,7 +59,6 @@ class RMII_Ethernet(config:EthernetConfig) extends Component {
     val tx_flag = in Bool()
 
     val pulse_send = in Bool()
-
 
   }
 
@@ -102,8 +99,9 @@ class RMII_TX(config:EthernetConfig) extends Component{
     val pulse_send = in Bool()
   }
 
+
   val rmii_tx = Reg(Bits (2 bits)) init(0)
-  val rmii_txv = Reg(Bool()) init(false)
+  val rmii_txv = Reg(Bool()) init(false) simPublic()
   val tx_data_ready = Reg(Bool()) init(false)
 
 
@@ -112,10 +110,16 @@ class RMII_TX(config:EthernetConfig) extends Component{
     dataWidth = 8 bits
   ))
 
+  val crc32_output = crc32.io.crc simPublic()
 
-  val crc32_valid = Reg(Bool()) init(false)
-  val crc32_mode = Reg(CRCCombinationalCmdMode()) init(CRCCombinationalCmdMode.INIT)
+
+  val crc32_valid = Reg(Bool()) init(false) simPublic()
+  val crc32_mode = Reg(CRCCombinationalCmdMode()) init(CRCCombinationalCmdMode.INIT) simPublic()
   val crc32_data = Reg(Bits(8 bits)) init(0)
+
+  val crc_debug = Reg(Bool()) init(false) simPublic()
+
+  crc_debug := False
 
   crc32.io.cmd.mode := crc32_mode
   crc32.io.cmd.valid := crc32_valid
@@ -137,14 +141,15 @@ class RMII_TX(config:EthernetConfig) extends Component{
     val PULSESTAMP = new State
     val DATA = new State
     val CRC = new State
+    val END = new State
 
 
     val preamble = Reg(Bits(64 bits)).init(Ethernet.parsePreamble(config.preambleData)).allowUnsetRegToAvoidLatch
     val destmac = Reg(Bits(48 bits)).init(Ethernet.parseMacAddress(config.sender)).allowUnsetRegToAvoidLatch
     val sourcemac = Reg(Bits(48 bits)).init(Ethernet.parseMacAddress(config.receiver)).allowUnsetRegToAvoidLatch
-    val ethtype = Reg(Bits(16 bits)).init(config.txType).allowUnsetRegToAvoidLatch
+    val ethtype = Reg(Bits(16 bits)).init(config.ethType).allowUnsetRegToAvoidLatch
 
-    val tx_byte_sel = Reg(UInt(log2Up(config.curDatalen+1) bits)) init(0)
+    val tx_byte_sel = Reg(UInt(log2Up(64) bits)) init(0)
     val tx_bit_sel = Reg(UInt(3 bits)) init(0)
 
     val pulse_send_seq = Reg(UInt(16 bits)) init(0)
@@ -153,6 +158,10 @@ class RMII_TX(config:EthernetConfig) extends Component{
     val debug_data = Reg(Bits( 8 bits)) init(0)
     val debug_sel = Reg(UInt( 3 bits)) init(0)
     val debug_valid = Reg(Bool()) init(false)
+
+    val data_byte_sel = Reg(UInt(log2Up(config.curDatalen+1) bits)) init(0)
+
+    val end_cnt = Reg(UInt(8 bits)) init(0)
 
     crc32_valid := False
     debug_valid := False
@@ -172,6 +181,7 @@ class RMII_TX(config:EthernetConfig) extends Component{
       pulse_send_seq := pulse_send_seq + 1
     }
 
+
     when(~isActive(IDLE)){
       tx_bit_sel := tx_bit_sel + 1
       when(tx_bit_sel === U(3)){
@@ -186,6 +196,7 @@ class RMII_TX(config:EthernetConfig) extends Component{
         rmii_txv := False
         crc32_mode := CRCCombinationalCmdMode.INIT
         when(io.tx_flag){
+          pulse_send_seq := pulse_send_seq + 1
           goto(PREAMBLE_AND_FRAMRESTART)
         }
       }
@@ -195,13 +206,12 @@ class RMII_TX(config:EthernetConfig) extends Component{
       }
 
 
-
     PREAMBLE_AND_FRAMRESTART
       .whenIsActive {
         rmii_txv := True
         rmii_tx(0) := preamble(56+(tx_bit_sel|<<1)-(tx_byte_sel|<<3))
         rmii_tx(1) := preamble(56+(tx_bit_sel|<<1)+1-(tx_byte_sel|<<3))
-        crc32_valid := True //for init
+        crc32_valid := True
         when(tx_bit_sel===U(3)){
           when(tx_byte_sel===U(7)){
             tx_byte_sel := 0
@@ -286,7 +296,6 @@ class RMII_TX(config:EthernetConfig) extends Component{
         }
       }
       .onExit {
-        tx_data_ready := True
         tx_bit_sel := 0
         tx_byte_sel := 0
       }
@@ -298,12 +307,18 @@ class RMII_TX(config:EthernetConfig) extends Component{
         when(tx_bit_sel === U(2)){
           crc32_valid := True
           crc32_mode := CRCCombinationalCmdMode.UPDATE
-          crc32_data := io.tx_data.payload(config.inDataWidth - tx_byte_sel * 8, 8 bits)
+          crc32_data := io.tx_data.payload(config.inDataWidth - 8 - tx_byte_sel * 8, 8 bits)
+          when(tx_byte_sel === U(config.inDataWidth/8-1)) {
+            tx_data_ready := True
+          }
         }
         when(tx_bit_sel === U(3)) {
-          tx_data_ready := True
-          when(tx_byte_sel === U(config.curDatalen-1)) {
+          data_byte_sel := data_byte_sel + 1
+          when(tx_byte_sel === U(config.inDataWidth/8-1)) {
             tx_byte_sel := 0
+          }
+          when(data_byte_sel === U(config.curDatalen-1)) {
+            data_byte_sel := 0
             goto(CRC)
           }
         }
@@ -317,12 +332,13 @@ class RMII_TX(config:EthernetConfig) extends Component{
 
     CRC
       .whenIsActive{
+        crc_debug := True
         rmii_tx(0) := crc32.io.crc(((tx_bit_sel |<< 1) + (tx_byte_sel |<< 3)).resized)
         rmii_tx(1) := crc32.io.crc(((tx_bit_sel |<< 1) + 1 + (tx_byte_sel |<< 3)).resized)
         when(tx_bit_sel === U(3)) {
           when(tx_byte_sel === U(3)) {
             tx_byte_sel := 0
-            goto(IDLE)
+            goto(END)
           }
         }
       }
@@ -331,14 +347,26 @@ class RMII_TX(config:EthernetConfig) extends Component{
         tx_byte_sel := 0
       }
 
+    END
+      .whenIsActive{
+        rmii_txv := False
+        rmii_tx := 0
+        end_cnt := end_cnt + 1
+        when(end_cnt===32){
+          goto(IDLE)
+        }
+      }
+      .onExit{
+        end_cnt := 0
+      }
+
   }
-
-
 
   io.setName("")
   crc32.io.setName("")
 
 }
+
 class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
   val io = new Bundle{
     val rmii_rx = in Bits (2 bits)
@@ -355,7 +383,7 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
 
   val Rx_Data = Reg(Bits(config.outDataWidth bits)) init (0)
   val Rx_Data_valid = Reg(Bool()) init (false)
-  val Rx_Data_sel = Reg(UInt(log2Up(config.outDataWidth/8) bits)) init(0)
+  val Rx_Data_sel = Reg(UInt(log2Up(config.outDataWidth/8+1) bits)) init(0)
 
   Byte_valid := False
   when(io.rmii_rxen) {
@@ -501,7 +529,7 @@ class RMII_RX(config:EthernetConfig = EthernetConfig()) extends Component{
 object Ethernet{
   /**
    * to use: val sourceMac = Ethernet.parseMacAddress(sender)
-   * @param mac
+   * @param
    * @return
    */
   def parseMacAddress(mac:String):Bits = {

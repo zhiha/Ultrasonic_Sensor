@@ -4,7 +4,7 @@ import spinal.core.sim._
 
 import scala.util.Random
 
-object TestAsyncFifo {
+object AsyncFifoTest {
   def main(args: Array[String]): Unit = {
     SimConfig.withWave.compile(new AsyncFifo(depth = 64, pushCd = ClockDomain.external("pushCd"), popCd = ClockDomain.external("popCd", withReset = false))).doSim {
       dut =>
@@ -21,7 +21,7 @@ object TestAsyncFifo {
           dut.pushCd.waitRisingEdge()
         }
         for (elem <- (0 to len - 1)) {
-          dut.io.pop.ready #= true
+          dut.io.pop.ready #= Random.nextBoolean()
           dut.popCd.waitRisingEdge()
         }
 
