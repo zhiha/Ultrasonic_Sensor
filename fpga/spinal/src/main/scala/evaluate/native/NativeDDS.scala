@@ -1,7 +1,7 @@
 package evaluate.native
 
 import scala.collection.mutable.ArrayBuffer
-import ylib.FmcwDdsConfig
+import ylib.FmcwDdsRomConfig
 
 
 /**
@@ -15,7 +15,7 @@ object NativeDDS {
   }
 
 
-  def refData(config: FmcwDdsConfig=FmcwDdsConfig())={
+  def refData(config: FmcwDdsRomConfig=FmcwDdsRomConfig())={
     val signalResolution = config.signalResolution
     val fclk = config.fclk
     val fc = config.fc
@@ -33,7 +33,7 @@ object NativeDDS {
     tx_ref
   }
 
-  def fixSim(config:FmcwDdsConfig=FmcwDdsConfig()) = {
+  def fixSim(config:FmcwDdsRomConfig=FmcwDdsRomConfig()) = {
     val phaseResolution = config.phaseResolution
     val signalResolution = config.signalResolution
     val coefResolution = config.coefResolution

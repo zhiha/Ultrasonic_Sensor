@@ -1,17 +1,16 @@
 package evaluate.sim.dsp
 
-import ylib.DDS
-
+import ylib.DDSRom
 import scala.collection.mutable._
 import spinal.core.sim._
-import ylib.FmcwDdsConfig
+import ylib.FmcwDdsRomConfig
 import evaluate.native.NativeDDS
 
 /**
  * @author zw-yao
  * @version 1.0
  */
-class DDSSim(val config:FmcwDdsConfig=FmcwDdsConfig()) extends DDS(config){
+class DDSRomSim(val config:FmcwDdsRomConfig=FmcwDdsRomConfig()) extends DDSRom(config){
   val dataResultQueue = Queue[Int]()
   val dataRefQueue = Queue[Int]()
 
@@ -59,7 +58,7 @@ class DDSSim(val config:FmcwDdsConfig=FmcwDdsConfig()) extends DDS(config){
           val ref = dataRefQueue.dequeue()
           val result = dataResultQueue.dequeue()
 //          print(s"cnt: ${idx} ,ref: ${ref}, result: ${result} \n")
-          assert((math.abs(ref-result).toDouble/(1<<(config.signalResolution-2)))<1e-3,s"ref (${ref.toDouble/(1<<(config.signalResolution-2))}) != result (${result.toDouble/(1<<(config.signalResolution-2))}) at cnt ${idx}")
+          assert((math.abs(ref-result).toDouble/(1<<(config.signalResolution-2)))<5e-3,s"ref (${ref.toDouble/(1<<(config.signalResolution-2))}) != result (${result.toDouble/(1<<(config.signalResolution-2))}) at cnt ${idx}")
         }
       }
     }

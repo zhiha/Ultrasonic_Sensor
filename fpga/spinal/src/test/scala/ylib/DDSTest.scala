@@ -1,9 +1,7 @@
 package ylib
 
-import spinal.core._
 import spinal.core.sim._
-import spinal.sim._
-import evaluate.sim.dsp.DDSSim
+import evaluate.sim.dsp.DDSRomSim
 
 /**
  * @author zw-yao
@@ -11,7 +9,7 @@ import evaluate.sim.dsp.DDSSim
  */
 object DDSTest {
   def main(args: Array[String]): Unit = {
-    SimConfig.withWave.compile(new DDSSim()).doSim{dut =>
+    SimConfig.withWave.compile(new DDSRomSim()).doSim{dut =>
       dut.init()
       dut.simStart()
       dut.waitSimDone()
