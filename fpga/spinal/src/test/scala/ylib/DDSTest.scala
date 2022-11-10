@@ -1,7 +1,8 @@
 package ylib
 
 import spinal.core.sim._
-import evaluate.sim.dsp.DDSRomSim
+import evaluate.sim.dsp.{DDSCordicSim, DDSRomSim}
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
  * @author zw-yao
@@ -15,5 +16,14 @@ object DDSTest {
       dut.waitSimDone()
     }
   }
+}
 
+class DDSTest extends AnyFunSuite{
+  test("DDSCordic Test"){
+    SimConfig.withWave.compile(new DDSCordicSim(DdsCordicConfig(cordic = CordicConfig(phaseWidth = 64,phaseResolutionWidth = 60)))).doSim{dut =>
+      dut.init()
+      dut.simStart()
+      dut.waitSimDone()
+    }
+  }
 }

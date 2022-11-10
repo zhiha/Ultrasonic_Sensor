@@ -1,7 +1,7 @@
 package evaluate.native
 
 import scala.collection.mutable.ArrayBuffer
-import ylib.FmcwDdsRomConfig
+import ylib.{DdsCordicConfig, DdsRomConfig}
 
 
 /**
@@ -10,49 +10,55 @@ import ylib.FmcwDdsRomConfig
  */
 object NativeDDS {
   def main(args: Array[String]): Unit = {
-//    nativeSim()
     fixSim()
   }
 
-
-  def refData(config: FmcwDdsRomConfig=FmcwDdsRomConfig())={
-    val signalResolution = config.signalResolution
-    val fclk = config.fclk
-    val fc = config.fc
-    val T = config.chirpTime
-    val B = config.bandwidth
+  def refRomData(config: DdsRomConfig=DdsRomConfig())={
+    val fclk = config.fmcw.fclk
+    val fc = config.fmcw.fc
+    val T = config.fmcw.chirpTime
+    val B = config.fmcw.bandwidth
     val S = B/T
-
-    val signalFactor = math.pow(2,signalResolution).toInt
     val N_sample = (T*fclk).toInt
-
     val t = for(idx <- (0 to (N_sample-1))) yield 1/fclk*idx
-    val tx_ref = for(ele <- t) yield {(math.sin(2*math.Pi*fc*ele+math.Pi*S*ele*ele)*signalFactor/4).toInt}
-
+    val tx_ref = for(ele <- t) yield {(math.sin(2*math.Pi*fc*ele+math.Pi*S*ele*ele)*math.pow(2,config.romSignalAmpWidth)).toInt}
 
     tx_ref
   }
 
-  def fixSim(config:FmcwDdsRomConfig=FmcwDdsRomConfig()) = {
-    val phaseResolution = config.phaseResolution
-    val signalResolution = config.signalResolution
-    val coefResolution = config.coefResolution
-    val fclk = config.fclk
-    val fc = config.fc
-    val T = config.chirpTime
-    val B = config.bandwidth
+  def refCordicData(config: DdsCordicConfig=DdsCordicConfig())={
+    val dataAmpWidth = config.cordic.dataAmpWidth
+    val fclk = config.fmcw.fclk
+    val fc = config.fmcw.fc
+    val T = config.fmcw.chirpTime
+    val B = config.fmcw.bandwidth
+    val S = B/T
+    val N_sample = (T*fclk).toInt
+    val t = for(idx <- (0 to (N_sample-1))) yield 1/fclk*idx
+    val tx_ref = for(ele <- t) yield {(math.cos(2*math.Pi*fc*ele+math.Pi*S*ele*ele)*(math.pow(2,dataAmpWidth))).toInt}
+
+    tx_ref
+  }
+
+  def fixSim(config:DdsRomConfig=DdsRomConfig()) = {
+    val romDepthWidth = config.romDepthWidth
+    val romSignalWidth = config.romSignalWidth
+    val coefResolutionWidth = config.coefResolutionWidth
+    val fclk = config.fmcw.fclk
+    val fc = config.fmcw.fc
+    val T = config.fmcw.chirpTime
+    val B = config.fmcw.bandwidth
     val S = B/T
 
-    val N_rom = math.pow(2,phaseResolution).toInt
-    val signalFactor = math.pow(2,signalResolution).toInt
+    val N_rom = math.pow(2,romDepthWidth).toInt
+    val signalFactor = math.pow(2,romSignalWidth).toInt
     val romSin = for (idx <- (0 to (N_rom-1))) yield (math.sin(2*math.Pi*idx/N_rom)*signalFactor/4).toInt
     val N_sample = (T*fclk).toInt
 
     val t = for(idx <- (0 to (N_sample-1))) yield 1/fclk*idx
     val tx_ref = for(ele <- t) yield {(math.sin(2*math.Pi*fc*ele+math.Pi*S*ele*ele)*signalFactor/4).toInt}
 
-
-    val coefFactor = math.pow(2,coefResolution).toLong
+    val coefFactor = math.pow(2,coefResolutionWidth).toLong
     val c1 = ((fc*N_rom/fclk)*coefFactor).toLong
     val c2 = ((S*N_rom/2/fclk/fclk)*coefFactor).toLong
 
@@ -60,7 +66,6 @@ object NativeDDS {
     var sum = 0
     var step_acc = 0.toLong
     var step = 0
-
 
     val tx = new ArrayBuffer[Int]()
 

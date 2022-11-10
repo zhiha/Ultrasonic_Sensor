@@ -23,12 +23,12 @@ class CircularRotateSim(c:CordicConfig=CordicConfig()) extends CircularRotate(c)
 
   def init() = {
     clockDomain.forkStimulus(10)
-    io.input.x #= 1<<(c.resolution)
+    io.input.x #= math.pow(2,c.dataAmpWidth).toInt
     io.input.y #= 0
   }
 
   def referenceModel(d:Double): Unit = {
-    RefQueue.enqueue((math.cos(d)*(1<<(c.resolution))).toInt)
+    RefQueue.enqueue((math.cos(d)*(math.pow(2,c.dataAmpWidth))).toInt)
   }
 
   def Driver()={
@@ -72,7 +72,7 @@ class CircularRotateSim(c:CordicConfig=CordicConfig()) extends CircularRotate(c)
           val ref = RefQueue.dequeue()
           val result = ResultQueue.dequeue()
           print(s"cnt: ${idx} ,ref: ${ref}, result: ${result} \n")
-          assert((math.abs(ref-result).toDouble/(1<<(c.resolution)))<1e-3,s"ref (${ref.toDouble/(1<<(c.resolution))}) != result (${result.toDouble/(1<<(c.resolution))}) at cnt ${idx}")
+          assert((math.abs(ref-result).toDouble/(1<<(c.dataAmpWidth)))<1e-3,s"ref (${ref.toDouble/(1<<(c.dataAmpWidth))}) != result (${result.toDouble/(1<<(c.dataAmpWidth))}) at cnt ${idx}")
         }
       }
     }
@@ -87,7 +87,7 @@ class CircularRotateSim(c:CordicConfig=CordicConfig()) extends CircularRotate(c)
   }
 
   def insertData(d:Double):Unit={
-    FeedQueue.enqueue((d*(1<<(c.resolution))).toInt)
+    FeedQueue.enqueue((d*(math.pow(2,c.phaseResolutionWidth))).toInt)
   }
 
 }
@@ -107,7 +107,7 @@ class CircularVectorSim(c:CordicConfig=CordicConfig()) extends CircularVector(){
   def referenceModel(d:CordicSimData): Unit = {
     val x = math.sqrt(d.x*d.x+d.y*d.y).toInt
     val y = 0
-    val z = (math.atan(d.y.toDouble/d.x)*(1<<(c.resolution))).toInt
+    val z = (math.atan(d.y.toDouble/d.x)*(math.pow(2,c.phaseResolutionWidth))).toInt
     RefQueue.enqueue(CordicSimData(x,y,z))
   }
 
@@ -115,8 +115,8 @@ class CircularVectorSim(c:CordicConfig=CordicConfig()) extends CircularVector(){
     val drv = fork{
       var idx = 0
       while (idx<200){
-        val x = (Random.nextDouble()*(1<<(c.resolution-1))).toInt
-        val y = (Random.nextDouble()*(1<<(c.resolution-1))).toInt
+        val x = (Random.nextDouble()*(math.pow(2,c.dataAmpWidth))).toInt
+        val y = (Random.nextDouble()*(math.pow(2,c.dataAmpWidth))).toInt
         insertData(CordicSimData(x,y,0))
         referenceModel(CordicSimData(x,y,0))
         val d = FeedQueue.dequeue()
@@ -157,8 +157,8 @@ class CircularVectorSim(c:CordicConfig=CordicConfig()) extends CircularVector(){
           val ref = RefQueue.dequeue()
           val result = ResultQueue.dequeue()
 //          print(s"cnt: ${idx} ,ref.x: ${ref.x}, result.x: ${result.x} \n")
-          assert((math.abs(ref.x-result.x).toDouble/(1<<(c.width-2)))<1e-3,s"ref (${ref.x.toDouble/(1<<(c.width-2))}) != result (${result.x.toDouble/(1<<(c.width-2))}) at cnt ${idx}")
-          assert((math.abs(ref.z-result.z).toDouble/(1<<(c.width-2)))<1e-3,s"ref (${ref.z.toDouble/(1<<(c.width-2))}) != result (${result.z.toDouble/(1<<(c.width-2))}) at cnt ${idx}")
+          assert((math.abs(ref.x-result.x).toDouble/(1<<(c.dataAmpWidth)))<1e-3,s"ref (${ref.x.toDouble/(1<<(c.dataAmpWidth))}) != result (${result.x.toDouble/(1<<(c.dataAmpWidth))}) at cnt ${idx}")
+          assert((math.abs(ref.z-result.z).toDouble/(1<<(c.phaseResolutionWidth)))<5e-3,s"ref (${ref.z.toDouble/(1<<(c.phaseResolutionWidth))}) != result (${result.z.toDouble/(1<<(c.phaseResolutionWidth))}) at cnt ${idx}")
         }
       }
     }
