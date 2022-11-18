@@ -52,12 +52,13 @@ void printf2(uint8_t n) {
 
 void write_data_recv(uint8_t *data) {
     FILE *fw = fopen("data_recv.bin", "wb");
-	for(int row = 0 ; row < FRAME_NUM ; row ++){
-		for (int i = 0; i < FRAME_SIZE; i++)
-		{   
-			fwrite((data+i+row*FRAME_SIZE), sizeof(uint8_t), 1, fw);
-		}
-	}
+	// for(int row = 0 ; row < FRAME_NUM ; row ++){
+	// 	for (int i = 0; i < FRAME_SIZE; i++)
+	// 	{   
+	// 		fwrite((data+i+row*FRAME_SIZE), sizeof(uint8_t), 1, fw);
+	// 	}
+	// }
+	fwrite(data, sizeof(uint8_t), FRAME_NUM*FRAME_SIZE, fw);
 
     fclose(fw);
 }
@@ -175,12 +176,8 @@ int main(int argc, char *argv[])
     }
 
 
-
 	FRAME_NUM = arguments->framenum;
-
-	int first_dimens = FRAME_NUM / 100;
-
-	int row = 0;
+	int frame_index = 0;
 
 	char sender[INET6_ADDRSTRLEN];
 	int sockfd, ret, i;
@@ -189,11 +186,17 @@ int main(int argc, char *argv[])
 	struct ifreq ifopts;	/* set promiscuous mode */
 	struct ifreq if_ip;	    /* get ip addr */
 	struct sockaddr_storage their_addr;
-	uint8_t buf[BUF_SIZ];   /* storage receive bytes frome socket*/
-	uint8_t data_recv[first_dimens][100][FRAME_SIZE];	/* storage data after byte combination */
+
+	uint8_t *buf;   /* storage receive bytes frome socket*/
+	uint8_t *data_recv;	/* storage data after byte combination */
+	uint8_t *file_point;
 	char ifName[IFNAMSIZ];  /* which interface it receive */
 
-    
+	buf = (uint8_t *) malloc(FRAME_SIZE);
+	data_recv = (uint8_t *) malloc(FRAME_SIZE*FRAME_NUM);
+	file_point = data_recv;
+
+    printf("malloc successful! \n");
 	
 	/* Get interface name (for paticular interface) */
 	// if (argc > 1)
@@ -243,52 +246,51 @@ int main(int argc, char *argv[])
 
 repeat:	
     
-    printf("listener: Waiting to recvfrom...\n");
+    // printf("listener: Waiting to recvfrom...\n");
 	// printf("sockfd: %d\n",sockfd);
 
-	numbytes = recvfrom(sockfd, buf, BUF_SIZ, 0, NULL, NULL);
 	// printf("numbytes:%ld\n",numbytes);
-	printf("listener: got packet %lu bytes\n", numbytes);
+	// printf("listener: got packet %lu bytes\n", numbytes);
 
 	/* Check the packet is for me */
-	if (eh->ether_dhost[0] == DEST_MAC0 &&
-			eh->ether_dhost[1] == DEST_MAC1 &&
-			eh->ether_dhost[2] == DEST_MAC2 &&
-			eh->ether_dhost[3] == DEST_MAC3 &&
-			eh->ether_dhost[4] == DEST_MAC4 &&
-			eh->ether_dhost[5] == DEST_MAC5) {
-		printf("Correct destination MAC address\n");
-	} else {
-		printf("Wrong destination MAC: %x:%x:%x:%x:%x:%x\n",
-						eh->ether_dhost[0],
-						eh->ether_dhost[1],
-						eh->ether_dhost[2],
-						eh->ether_dhost[3],
-						eh->ether_dhost[4],
-						eh->ether_dhost[5]);
-		ret = -1;
-		goto done;
-	}
+	// if (eh->ether_dhost[0] == DEST_MAC0 &&
+	// 		eh->ether_dhost[1] == DEST_MAC1 &&
+	// 		eh->ether_dhost[2] == DEST_MAC2 &&
+	// 		eh->ether_dhost[3] == DEST_MAC3 &&
+	// 		eh->ether_dhost[4] == DEST_MAC4 &&
+	// 		eh->ether_dhost[5] == DEST_MAC5) {
+	// 	printf("Correct destination MAC address\n");
+	// } else {
+	// 	printf("Wrong destination MAC: %x:%x:%x:%x:%x:%x\n",
+	// 					eh->ether_dhost[0],
+	// 					eh->ether_dhost[1],
+	// 					eh->ether_dhost[2],
+	// 					eh->ether_dhost[3],
+	// 					eh->ether_dhost[4],
+	// 					eh->ether_dhost[5]);
+	// 	ret = -1;
+	// 	goto done;
+	// }
 
 	/* Get source IP */
-	((struct sockaddr_in *)&their_addr)->sin_addr.s_addr = iph->saddr;
-	inet_ntop(AF_INET, &((struct sockaddr_in*)&their_addr)->sin_addr, sender, sizeof sender);
+	// ((struct sockaddr_in *)&their_addr)->sin_addr.s_addr = iph->saddr;
+	// inet_ntop(AF_INET, &((struct sockaddr_in*)&their_addr)->sin_addr, sender, sizeof sender);
 
-	/* Look up my device IP addr if possible */
-	strncpy(if_ip.ifr_name, ifName, IFNAMSIZ-1);
-	if (ioctl(sockfd, SIOCGIFADDR, &if_ip) >= 0) { /* if we can't check then don't */
-		printf("Source IP: %s\n My IP: %s\n", sender, 
-				inet_ntoa(((struct sockaddr_in *)&if_ip.ifr_addr)->sin_addr));
-		/* ignore if I sent it */
-		if (strcmp(sender, inet_ntoa(((struct sockaddr_in *)&if_ip.ifr_addr)->sin_addr)) == 0)	{
-			printf("but I sent it :(\n");
-			ret = -1;
-			goto done;
-		}
-	}
+	// /* Look up my device IP addr if possible */
+	// strncpy(if_ip.ifr_name, ifName, IFNAMSIZ-1);
+	// if (ioctl(sockfd, SIOCGIFADDR, &if_ip) >= 0) { /* if we can't check then don't */
+	// 	printf("Source IP: %s\n My IP: %s\n", sender, 
+	// 			inet_ntoa(((struct sockaddr_in *)&if_ip.ifr_addr)->sin_addr));
+	// 	/* ignore if I sent it */
+	// 	if (strcmp(sender, inet_ntoa(((struct sockaddr_in *)&if_ip.ifr_addr)->sin_addr)) == 0)	{
+	// 		printf("but I sent it :(\n");
+	// 		ret = -1;
+	// 		goto done;
+	// 	}
+	// }
 
-	/* UDP payload length */
-	ret = ntohs(udph->len) - sizeof(struct udphdr);
+	// /* UDP payload length */
+	// ret = ntohs(udph->len) - sizeof(struct udphdr);
 
 
 
@@ -296,21 +298,15 @@ repeat:
 	// printf("\tData:\n");
 
 	
-    while(row < FRAME_NUM){
-		for(i=0; i<(FRAME_SIZE); i++) {
-			data_recv[row][i] = buf[DROP_SIZ + i];
-		}
-		row = row + 1;
-		goto done;    
+    while(frame_index < FRAME_NUM){
+		numbytes = recvfrom(sockfd, buf, BUF_SIZ, 0, NULL, NULL);
+		memcpy(data_recv,(buf+DROP_SIZ),FRAME_SIZE);
+		data_recv = data_recv + FRAME_SIZE;
+		frame_index = frame_index + 1;   
 	}
 
-	write_data_recv(&data_recv[0][0][0]);
-	goto finish;
-	
-		
-done:	goto repeat;
-
-finish: 
+	printf("write_data_recv");
+	write_data_recv(file_point);
 
 	print_mesg(arguments, ret);
 	close(sockfd);

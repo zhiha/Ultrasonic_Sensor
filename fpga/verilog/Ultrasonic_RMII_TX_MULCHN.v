@@ -44,7 +44,7 @@ module Ultrasonic_RMII_TX_MULCHN(
 
 // parameter define 
 localparam BOARD_MAC = 48'h11_22_33_44_55_66;
-localparam DES_MAC =  48'hfa_23_aa_60_10_6f;//48'hd6_22_2f_cf_7e_d1;
+localparam DES_MAC =  48'hfa_23_aa_60_10_6f;//48'hfc_34_97_b5_9f_64;//48'hd6_22_2f_cf_7e_d1;
 localparam ETH_TYPE = 16'h0900; 
 localparam MIN_DATA_NUM = 16'd46; 
 
